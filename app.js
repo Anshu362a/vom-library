@@ -23,7 +23,7 @@ const MongoStore = require('connect-mongo');     //connect mongo
 
 // Models
 const Admin = require('./models/adminRegister');
-const Student = require('./models/Student');
+const Student = require('./models/student');
 
 // Routes
 const adminRoutes = require('./routes/admin');
