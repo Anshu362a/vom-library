@@ -8,6 +8,7 @@ const catchAsync = require('../utils/catchAsync');
 const ExpressError = require('../utils/ExpressError');
 const Student = require('../models/student');
 const Enquiry = require('../models/enquiry');
+const Visit = require('../models/visit');
 
 const moment = require('moment-timezone');
 
@@ -595,7 +596,6 @@ router.get('/monthly-attendance', isAdminLoggedIn, async (req, res) => {
 
 // -----------visitors-------//
 // In routes/admin.js
-const Visit = require('../models/Visit');
 
 router.get('/visitors', isAdminLoggedIn, async (req, res) => {
   const visits = await Visit.find().sort({ visitedAt: -1 });
