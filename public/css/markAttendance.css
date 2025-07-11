@@ -1,0 +1,215 @@
+/* ===== General Styling ===== */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #2E003E;
+  color: #FFFFFF;
+  margin: 0;
+  padding: 0;
+}
+.mark-attendance-section {
+  margin-top: 20px;
+  padding-bottom: 100px;
+}
+
+.mark-attendance-section h2,
+.mark-attendance-section h3 {
+  color: #FA812F; /* Or #FFFFFF for visibility */
+}
+
+/* ===== Container ===== */
+.container1 {
+  width: 90%;
+  max-width: 900px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #3f0a54;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== Headings ===== */
+h2, h3 {
+  text-align: center;
+  color: #FA812F;
+  color: #FA812F;
+  margin-bottom: 20px;
+}
+
+/* ===== Attendance Form ===== */
+.attendance-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+
+ .attendance-form label {
+  font-weight: bold;
+  color: #FFFFFF; /* White text to make label visible */
+ }
+
+
+
+.attendance-form input {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #000;
+  transition: box-shadow 0.3s;
+}
+
+.attendance-form input:focus {
+  outline: none;
+  box-shadow: 0 0 5px #FA812F;
+  border: 1px solid #FA812F;
+}
+
+.attendance-form button {
+  background-color: #FA812F;
+  color: #FFFFFF;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.attendance-form button:hover {
+  background-color: #ff9c4a;
+}
+
+/* ===== Error Message ===== */
+.error {
+  color: #FF4C4C;
+  font-weight: bold;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* ===== Student Card ===== */
+.student-card {
+  text-align: center;
+  padding: 25px;
+  background-color: #4f1a65;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(250, 129, 47, 0.3);
+}
+
+.student-card p{
+  color: #FFFFFF;
+}
+
+.student-card img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #FA812F;
+  margin-bottom: 10px;
+}
+
+/* ===== Entry / Exit Styling ===== */
+.success {
+  color: #00FFAE;
+  font-weight: bold;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.exit {
+  color: #FF6F61;
+  font-weight: bold;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+/* ===== Link for New Entry ===== */
+.new-entry {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 16px;
+  background-color: #FA812F;
+  color: #FFFFFF;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+}
+
+.new-entry:hover {
+  background-color: #ff9c4a;
+}
+
+/* ===== Students IN Table ===== */
+.in-table {
+  margin-top: 40px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #fff;
+  color: #000;
+}
+
+th, td {
+  padding: 14px;
+  text-align: center;
+  font-size: 15px;
+}
+
+thead {
+  background-color: #FA812F;
+  color: #fff;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tbody tr:hover {
+  background-color: #e0e0e0;
+  cursor: pointer;
+}
+
+/* ===== Animation Keyframes ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+
+  h2, h3 {
+    font-size: 20px;
+  }
+
+  .attendance-form input,
+  .attendance-form button {
+    font-size: 14px;
+  }
+
+  th, td {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .student-card img {
+    width: 100px;
+    height: 100px;
+  }
+}

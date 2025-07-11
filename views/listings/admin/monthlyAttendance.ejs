@@ -1,0 +1,55 @@
+<section class="monthly-attendance-section">
+  <div class="container2">
+    <h2>📅 Monthly Attendance Report - <%= monthName %> <%= year %></h2>
+
+    <form class="month-form" method="GET" action="/admin/monthly-attendance">
+      <label for="month">Select Month:</label>
+      <input type="month" id="month" name="month" value="<%= `${year}-${String(month).padStart(2, '0')}` %>" required>
+      <button type="submit">View</button>
+    </form>
+
+    <% if (students.length === 0) { %>
+      <p class="no-records">❌ No attendance records found for this month.</p>
+    <% } else { %>
+      <table class="monthly-table">
+        <thead>
+          <tr>
+            <th>Sr.</th>
+            <th>Name</th>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Entry</th>
+            <th>Exit</th>
+            <th>Status</th>
+            <th>Hours</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% students.forEach((student, idx) => {
+              student.attendance.forEach((record) => {
+                const attDate = new Date(record.entryTime || record.date);
+                if (attDate.getMonth() === month - 1 && attDate.getFullYear() === year) {
+                  let duration = '—';
+                  if (record.entryTime && record.exitTime) {
+                    const diffMs = new Date(record.exitTime) - new Date(record.entryTime);
+                    const hrs = Math.floor(diffMs / (1000 * 60 * 60));
+                    const mins = Math.floor((diffMs / (1000 * 60)) % 60);
+                    duration = `${hrs}h ${mins}m`;
+                  }
+          %>
+            <tr>
+              <td><%= idx + 1 %></td>
+              <td><%= student.name %></td>
+              <td><%= student.studentId %></td>
+              <td><%= attDate.toLocaleDateString() %></td>
+              <td><%= record.entryTime ? new Date(record.entryTime).toLocaleTimeString() : '—' %></td>
+              <td><%= record.exitTime ? new Date(record.exitTime).toLocaleTimeString() : '—' %></td>
+              <td><%= record.status %></td>
+              <td><%= duration %></td>
+            </tr>
+          <% } }) }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</section>

@@ -1,0 +1,24 @@
+<section class="container mt-5">
+  <h2>Edit Membership Expiry</h2>
+
+  <form action="/admin/edit-expiry/<%= student._id %>" method="POST" class="mt-4">
+    <div class="mb-3">
+      <label for="studentId" class="form-label">Student ID</label>
+      <input type="text" class="form-control" id="studentId" value="<%= student.studentId %>" readonly>
+    </div>
+
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" class="form-control" id="name" value="<%= student.name %>" readonly>
+    </div>
+
+    <div class="mb-3">
+      <label for="membershipExpiry" class="form-label">Membership Expiry Date</label>
+      <input type="date" name="newExpiry" value="<%= student.membershipExpiry.toISOString().split('T')[0] %>" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">✅ Update</button>
+    <a href="/admin/check-dues" class="btn btn-secondary">Cancel</a>
+  </form>
+</section>
+

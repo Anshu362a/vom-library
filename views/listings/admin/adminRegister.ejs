@@ -1,0 +1,70 @@
+
+<section class="admin-register">
+  <div class="register-box">
+    <h2>Register Admin 🛡️</h2>
+
+    <% if (errors?.general) { %>
+      <div class="alert alert-danger text-center"><%= errors.general %></div>
+    <% } %>
+
+    <form id="registerForm" action="/admin/register" method="POST" novalidate>
+      
+      <!-- Email -->
+      <div class="mb-3">
+        <input
+          type="email"
+          name="email"
+          id="email"
+          placeholder="Email Address"
+          class="form-control <% if (errors?.email) { %>is-invalid<% } %>"
+          required
+          value="<%= formData?.email || '' %>"
+        />
+        <% if (errors?.email) { %>
+          <div id="emailFeedback" class="invalid-feedback"><%= errors.email %></div>
+        <% } else { %>
+          <div id="emailFeedback" class="invalid-feedback">❌ Please enter a valid email address.</div>
+        <% } %>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <input
+          type="password"
+          name="password"
+          id="password"
+          placeholder="Password (Min 6 chars, 1 uppercase, 1 symbol, 1 number)"
+          class="form-control <% if (errors?.password) { %>is-invalid<% } %>"
+          required
+        />
+        <% if (errors?.password) { %>
+          <div id="passwordFeedback" class="invalid-feedback"><%= errors.password %></div>
+        <% } else { %>
+          <div id="passwordFeedback" class="invalid-feedback"></div>
+        <% } %>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="mb-3">
+        <input
+          type="password"
+          name="confirmPassword"
+          id="confirmPassword"
+          placeholder="Confirm Password"
+          class="form-control <% if (errors?.confirmPassword) { %>is-invalid<% } %>"
+          required
+        />
+        <% if (errors?.confirmPassword) { %>
+          <div id="confirmFeedback" class="invalid-feedback"><%= errors.confirmPassword %></div>
+        <% } else { %>
+          <div id="confirmFeedback" class="invalid-feedback"></div>
+        <% } %>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Register</button>
+    </form>
+
+    <p class="note mt-3 text-muted">Only trusted persons can register admins.</p>
+    <p class="login-link">Already registered? <a href="/admin/login">Login here</a></p>
+  </div>
+</section>

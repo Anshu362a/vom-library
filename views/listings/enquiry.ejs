@@ -1,0 +1,30 @@
+<section class="enquiry-section">
+  <div class="enquiry-container">
+    <h2>📩 <span class="accent">Enquiry</span> Form</h2>
+    <p>Got a question? Feel free to reach out. We’d love to help!</p>
+
+    <form action="/enquiry/submit" method="POST" class="enquiry-form">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" name="name" id="name" required />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" name="email" id="email" required />
+      </div>
+
+      <div class="form-group">
+        <label for="mobile">Mobile Number</label>
+        <input type="text" name="mobile" id="mobile" required />
+      </div>
+
+      <div class="form-group">
+        <label for="message">Your Message</label>
+        <textarea name="message" id="message" rows="4" required></textarea>
+      </div>
+
+      <button type="submit" class="enquiry-btn">Submit Enquiry</button>
+    </form>
+  </div>
+</section>

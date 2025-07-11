@@ -1,0 +1,58 @@
+<section class="dues-section">
+  <div class="container mt-4">
+    <h2>💰 Check & Update Membership Dues</h2>
+
+    <% if (students.length === 0) { %>
+      <p>No students found.</p>
+    <% } else { %>
+      <table class="table table-bordered mt-3">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>Expiry Date</th>
+            <th>Days Left</th>
+            <th>Status</th>
+            <th>Extend</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% students.forEach((student, index) => {
+            const expiryDate = new Date(student.membershipExpiry);
+            const today = new Date();
+            const timeDiff = expiryDate - today;
+            const dayDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            const isExpired = dayDiff < 0;
+          %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td><%= student.studentId %></td>
+              <td><%= student.name %></td>
+              <td><%= student.email %></td>
+              <td><%= student.mobile %></td>
+              <td><%= expiryDate.toDateString() %></td>
+              <td>
+                <% if (isExpired) { %>
+                  <span class="text-danger">Expired <%= Math.abs(dayDiff) %> day(s) ago</span>
+                <% } else { %>
+                  <span class="text-success"><%= dayDiff %> day(s) left</span>
+                <% } %>
+              </td>
+              <td>
+                <span class="badge bg-<%= isExpired ? 'danger' : 'success' %>">
+                  <%= isExpired ? 'Expired' : 'Active' %>
+                </span>
+              </td>
+              <td>
+                <a href="/admin/edit-expiry/<%= student._id %>" class="btn btn-sm btn-warning">✏️ Edit</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</section>

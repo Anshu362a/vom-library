@@ -1,0 +1,37 @@
+<section class="student-list">
+  <div class="container mt-4">
+    <h2>📚 Registered Students</h2>
+
+    <% if (students.length === 0) { %>
+      <p>No students registered yet.</p>
+    <% } else { %>
+      <table class="table table-bordered mt-3">
+        <thead class="table-dark">
+          <tr>
+            <th>Sr.No.</th>
+            <th>studentID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>ID Card</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% students.forEach((student, index) => { %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td><%= student.studentId %></td>
+              <td><%= student.name %></td>
+              <td><%= student.email %></td>
+              <td><%= student.mobile %></td>
+              <td>
+                <a href="/admin/students/<%= student._id %>/idcard" class="btn btn-primary btn-sm" target="_blank">🪪 Generate ID Card </a>
+              </td>
+
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</section>

@@ -1,0 +1,174 @@
+/* General Section Styling */
+.student-register {
+  padding: 60px 20px;
+  background-color: #f9f9f9;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  display: flex;
+  justify-content: center;
+}
+
+/* Register Box Container */
+.register-box {
+  background-color: #2E003E;
+  color: white;
+  padding: 40px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+/* Heading */
+.register-box h2 {
+  margin-bottom: 30px;
+  color: #FA812F;
+  font-size: 28px;
+}
+
+/* Form Fields */
+.register-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Input Fields */
+.register-box input[type="text"],
+.register-box input[type="email"],
+.register-box input[type="password"],
+.register-box input[type="tel"],
+.register-box input[type="file"] {
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 16px;
+  border: none;
+  outline: none;
+}
+
+/* File Input Styling */
+.register-box input[type="file"] {
+  background-color: white;
+  color: #2E003E;
+  font-weight: 500;
+  padding: 10px;
+  cursor: pointer;
+}
+
+/* Image Upload Label */
+.image-label {
+  color: #FA812F;
+  font-weight: 600;
+  text-align: left;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* Register Button */
+.register-box button {
+  background-color: #FA812F;
+  color: #2E003E;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.register-box button:hover {
+  background-color: white;
+  color: #2E003E;
+}
+
+/* Link to login */
+.register-box p {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.register-box a {
+  color: #FA812F;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+/* enquiry start  */
+.enquiry-section {
+  background-color: #fef3e2;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.enquiry-container {
+  max-width: 600px;
+  margin: auto;
+  background: #fff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.enquiry-container h2 {
+  color: #2E003E;
+  margin-bottom: 10px;
+  font-size: 32px;
+}
+
+.enquiry-container .accent {
+  color: #FA812F;
+}
+
+.enquiry-container p {
+  margin-bottom: 30px;
+  color: #555;
+}
+
+.enquiry-form .form-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.enquiry-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #2E003E;
+}
+
+.enquiry-form input,
+.enquiry-form textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.enquiry-btn {
+  background-color: #FA812F;
+  color: #fff;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.enquiry-btn:hover {
+  background-color: #2E003E;
+  color: #fff;
+}
+
+
+/* view enquiry */
+.enquiry-list h2 {
+  color: #2E003E;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* enquiry end */

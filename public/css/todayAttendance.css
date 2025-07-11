@@ -1,0 +1,179 @@
+/* ===== Page Background and Font ===== */
+body {
+  background-color: #2E003E;
+  color: #FFFFFF;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Header ===== */
+h2 {
+  text-align: center;
+  color: #FA812F;
+  margin-top: 20px;
+  font-size: 2rem;
+}
+
+h3 {
+  margin-top: 40px;
+  color: #FA812F;
+}
+
+/* ===== Summary Box Styling ===== */
+.summary-boxes {
+  background-color: #3f0a54;
+  color: #FFFFFF;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 30px auto;
+  max-width: 1000px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.summary-boxes p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.summary-boxes form {
+  margin: 0;
+}
+
+.summary-boxes button {
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.summary-boxes .btn-success {
+  background-color: #00b894;
+  color: white;
+}
+
+.summary-boxes .btn-success:hover {
+  background-color: #00a383;
+}
+
+.summary-boxes .btn-danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.summary-boxes .btn-danger:hover {
+  background-color: #c0392b;
+}
+
+/* ===== Attendance Table ===== */
+table {
+  width: 100%;
+  max-width: 1000px;
+  margin: auto;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  color: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+}
+
+thead {
+  background-color: #FA812F;
+  color: white;
+}
+
+th, td {
+  padding: 14px;
+  text-align: center;
+  font-size: 15px;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* ===== Absent Students List ===== */
+ul {
+  list-style-type: none;
+  padding-left: 20px;
+  max-width: 1000px;
+  margin: auto;
+  margin-top: 15px;
+}
+
+ul li {
+  background-color: #4f1a65;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 15px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== Responsive Layout ===== */
+@media (max-width: 768px) {
+  .summary-boxes {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  table, th, td {
+    font-size: 14px;
+  }
+
+  .summary-boxes button {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
+/* ===== Absent Students Table ===== */
+h3{
+  margin-top: 20px;
+
+}
+.absent-table {
+  width: 100%;
+  max-width: 1000px;
+  margin: 30px auto;
+  border-collapse: collapse;
+  background-color: #fff;
+  color: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+}
+
+.absent-table thead {
+  background-color: #FF4C4C;
+  color: #fff;
+}
+
+.absent-table th, .absent-table td {
+  padding: 14px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.absent-table tbody tr:nth-child(even) {
+  background-color: #f8f8f8;
+}
+
+.absent-table tbody tr:hover {
+  background-color: #f1f1f1;
+}

@@ -1,0 +1,157 @@
+.admin-login {
+  padding: 60px 20px;
+  background-color: #f9f9f9;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-box {
+  background-color: #2E003E;
+  color: white;
+  padding: 40px 30px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.login-box h2 {
+  margin-bottom: 30px;
+  color: #FA812F;
+  font-size: 28px;
+}
+
+.login-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-box input[type="email"],
+.login-box input[type="password"] {
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+.login-box button {
+  background-color: #FA812F;
+  color: #2E003E;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-box button:hover {
+  background-color: white;
+  color: #2E003E;
+}
+
+.note {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #ddd;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* adminRegister start */
+.admin-register {
+  padding: 60px 20px;
+  background-color: #f9f9f9;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.register-box {
+  background-color: #2E003E;
+  color: white;
+  padding: 40px 30px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.register-box h2 {
+  margin-bottom: 30px;
+  color: #FA812F;
+  font-size: 28px;
+}
+
+.register-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.register-box input[type="email"],
+.register-box input[type="password"] {
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+.register-box button {
+  background-color: #FA812F;
+  color: #2E003E;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.register-box button:hover {
+  background-color: white;
+  color: #2E003E;
+}
+
+.register-box .note {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #ddd;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* adminRegister end */

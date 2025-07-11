@@ -1,0 +1,68 @@
+/* Login Section */
+.student-login {
+  padding: 60px 20px;
+  background-color: #f9f9f9;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  display: flex;
+  justify-content: center;
+}
+
+.login-box {
+  background-color: #2E003E;
+  color: white;
+  padding: 40px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.login-box h2 {
+  margin-bottom: 30px;
+  color: #FA812F;
+  font-size: 28px;
+}
+
+.login-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-box input[type="email"],
+.login-box input[type="password"] {
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 16px;
+  border: none;
+  outline: none;
+}
+
+.login-box button {
+  background-color: #FA812F;
+  color: #2E003E;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-box button:hover {
+  background-color: white;
+  color: #2E003E;
+}
+
+.login-box p {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.login-box a {
+  color: #FA812F;
+  text-decoration: underline;
+  font-weight: 500;
+}

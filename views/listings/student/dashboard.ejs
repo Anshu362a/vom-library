@@ -1,0 +1,82 @@
+<section class="student-dashboard">
+  <div class="dashboard-container">
+    <% if (student) { %>
+
+      <!-- Profile Section -->
+      <div class="student-profile">
+        <div class="profile-image">
+          <!-- <label for="profileUpload" class="upload-btn">📷</label>
+          <img src="/images/default-user.png" alt="Profile Image" id="profilePreview" />
+          <input type="file" id="profileUpload" style="display: none;" /> -->
+          <form action="/student/upload-profile" method="POST" enctype="multipart/form-data">
+            <label for="profileUpload" class="upload-btn">📷</label>
+            <img src="<%= student.profileImage || '/images/default-user.png' %>" alt="Profile Image" id="profilePreview" />
+            <input type="file" name="profile" id="profileUpload" style="display: none;" onchange="this.form.submit()" />
+          </form>
+
+        </div>
+
+        <div class="profile-info">
+          <h2>Hello, <%= student.name %> 👋</h2>
+          <p><strong>Student ID:</strong> <%= student.studentId %></p>
+          <p><strong>Email:</strong> <%= student.email %></p>
+          <p><strong>Mobile:</strong> <%= student.mobile %></p>
+          <button class="edit-btn" onclick="alert('Edit form coming soon!')" disabled>✏️ Edit Education</button>
+        </div>
+      </div>
+
+      <!-- Stats Section -->
+      <div class="stats-container">
+        <div class="card">
+          <h3>📅 Membership Expiry</h3>
+          <p style="color: <%= new Date(student.membershipExpiry) < new Date() ? 'red' : 'lightgreen' %>;">
+            <%= new Date(student.membershipExpiry).toDateString() %>
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>✅ Total Attendance</h3>
+          <p><%= student.attendance.length %> Days</p>
+        </div>
+      </div>
+
+      <!-- Attendance History -->
+      <div class="attendance-section">
+        <h3>📖 Attendance History</h3>
+        <% if (student.attendance.length === 0) { %>
+          <p>No attendance records available.</p>
+        <% } else { %>
+          <ul>
+            <% student.attendance.forEach(att => { %>
+              <li>
+                <strong><%= new Date(att.date).toDateString() %></strong>: <%= att.status %>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
+      </div>
+
+      <a href="/student/logout" class="logout-btn">🚪 Logout</a>
+
+    <% } else { %>
+      <p style="color: red; text-align: center;">Student data not found.</p>
+    <% } %>
+  </div>
+</section>
+
+<script>
+  // Check for DOM before adding event listener
+  document.addEventListener("DOMContentLoaded", function () {
+    const uploadInput = document.getElementById("profileUpload");
+    const previewImage = document.getElementById("profilePreview");
+
+    if (uploadInput && previewImage) {
+      uploadInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+          previewImage.src = URL.createObjectURL(file);
+        }
+      });
+    }
+  });
+</script>

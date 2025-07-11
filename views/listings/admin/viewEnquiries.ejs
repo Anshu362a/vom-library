@@ -1,0 +1,58 @@
+<section class="enquiries-section">
+  <div class="container">
+    <h2>📋 All Enquiries</h2>
+
+    <% if (enquiries.length === 0) { %>
+      <p>No enquiries yet.</p>
+    <% } else { %>
+      <table class="table table-striped mt-4">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>Message</th>
+            <th>Submitted At</th>
+            <th>Status</th>
+            <th>Solved At</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% enquiries.forEach(enquiry => { %>
+            <tr>
+              <td><%= enquiry.name %></td>
+              <td><%= enquiry.email %></td>
+              <td><%= enquiry.mobile %></td>
+              <td><%= enquiry.message %></td>
+              <td><%= enquiry.submittedAt.toLocaleString() %></td>
+              <td>
+                <% if (enquiry.isSolved) { %>
+                  ✅ <strong>Solved</strong>
+                <% } else { %>
+                  ❌ <strong>Pending</strong>
+                <% } %>
+              </td>
+              <td>
+                <% if (enquiry.isSolved && enquiry.solvedAt) { %>
+                  <%= enquiry.solvedAt.toLocaleString() %>
+                <% } else { %>
+                  ---
+                <% } %>
+              </td>
+              <td>
+                <% if (!enquiry.isSolved) { %>
+                  <form action="/admin/enquiries/<%= enquiry._id %>/solve" method="POST">
+                    <button class="btn btn-sm btn-success">Mark as Solved</button>
+                  </form>
+                <% } else { %>
+                  <span class="text-muted">✓</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</section>
