@@ -593,4 +593,15 @@ router.get('/monthly-attendance', isAdminLoggedIn, async (req, res) => {
 
 //---------monthlyAttendance end-----------//
 
+// -----------visitors-------//
+// In routes/admin.js
+const Visit = require('../models/Visit');
+
+router.get('/visitors', isAdminLoggedIn, async (req, res) => {
+  const visits = await Visit.find().sort({ visitedAt: -1 });
+  res.render('listings/admin/visitors', { visits });
+});
+
+// -----------visitors-------//
+
 module.exports = router;

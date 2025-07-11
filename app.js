@@ -16,8 +16,12 @@ const flash = require('connect-flash');
 const methodOverride = require('method-override');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const Visit = require('./models/visit');
+const geoip = require('geoip-lite');
+// const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
 const ExpressError = require('./utils/ExpressError');
-  
+
 const MongoStore = require('connect-mongo');     //connect mongo 
 
 
@@ -57,6 +61,48 @@ app.use(ejsLayouts);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
+
+
+// --------------ip and others------//
+
+app.use(async (req, res, next) => {
+  const rawIp =
+    req.headers['x-forwarded-for'] ||
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress;
+
+  const ip = rawIp.split(',')[0].trim(); // Handles proxies/multiple IPs
+
+  const geo = geoip.lookup(ip);
+
+  const location = geo
+    ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
+    : 'Unknown Location';
+
+  await Visit.create({ count: 1, ip, location });
+
+  next();
+});
+
+
+
+// app.use(async (req, res, next) => {
+//   // Get visitor IP
+//   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
+//   // Get location from IP
+//   const geo = geoip.lookup(ip);
+//   const location = geo
+//     ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
+//     : 'Unknown Location';
+
+//   // Save each visit with IP & location
+//   await Visit.create({ count: 1, ip, location });
+
+//   next();
+// });
+// --------------ip and others------//
+
 
 // Session Setup
 const sessionConfig = {
@@ -119,8 +165,28 @@ app.use('/student', studentRoutes);
 app.use('/enquiry', enquiryRoutes);
 
 // Home Route
-app.get('/', (req, res) => {
-  res.render('listings/home');
+// app.get('/', (req, res) => {
+//   res.render('listings/home');
+// });
+
+// Home Route with Visitor Count
+
+app.get('/', async (req, res) => {
+  const visit = await Visit.findOne();
+  const count = visit ? visit.count : 0;
+  res.render('listings/home', { visitCount: count });
+});
+
+// Middleware to count visits
+app.use(async (req, res, next) => {
+  let visit = await Visit.findOne();
+  if (!visit) {
+    visit = new Visit({ count: 1 });
+  } else {
+    visit.count += 1;
+  }
+  await visit.save();
+  next();
 });
 
 // Catch 404 - Not Found

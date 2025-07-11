@@ -96,3 +96,32 @@
 .link-card:hover i {
   color: #2E003E;
 }
+
+
+/* ----visitor style */
+
+.visitor-count-section {
+  margin-top: 50px;
+  padding: 20px 0;
+  background-color: #2E003E;
+}
+
+.visitor-counter {
+  color: #FA812F;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px 20px;
+  display: inline-block;
+  border-radius: 30px;
+  background-color: #fff;
+  border: 2px solid #FA812F;
+  box-shadow: 0 0 10px rgba(250, 129, 47, 0.3);
+  transition: all 0.3s ease-in-out;
+}
+
+.visitor-counter:hover {
+  background-color: #FA812F;
+  color: #FFFFFF;
+  border-color: #fff;
+}
+/* ----visitor style */

@@ -1,0 +1,12 @@
+<h2>Visitor Logs</h2>
+<table>
+  <tr><th>#</th><th>IP</th><th>Location</th><th>Visited At</th></tr>
+  <% visits.forEach((v, i) => { %>
+    <tr>
+      <td><%= i + 1 %></td>
+      <td><%= v.ip %></td>
+      <td><%= v.location %></td>
+      <td><%= v.visitedAt.toLocaleString() %></td>
+    </tr>
+  <% }) %>
+</table>
