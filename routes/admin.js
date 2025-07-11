@@ -6,7 +6,7 @@ const { adminRegisterSchema, adminLoginSchema } = require('../validations/admin'
 const isAdminLoggedIn = require('../middleware/isAdminLoggedIn');
 const catchAsync = require('../utils/catchAsync');
 const ExpressError = require('../utils/ExpressError');
-const Student = require('../models/Student');
+const Student = require('../models/student');
 const Enquiry = require('../models/enquiry');
 
 const moment = require('moment-timezone');
