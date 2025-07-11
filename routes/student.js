@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const Student = require('../models/Student');
+const Student = require('../models/student');
 const { studentRegisterSchema, studentLoginSchema } = require('../validations/student');
 const isStudentLoggedIn = require('../middleware/isStudentLoggedIn');
 const catchAsync = require('../utils/catchAsync');
