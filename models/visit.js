@@ -2,22 +2,32 @@
 const mongoose = require('mongoose');
 
 const visitSchema = new mongoose.Schema({
-  count: {
-    type: Number,
-    default: 0
-  },
+  count: { type: Number, default: 0 },
   ip: String,
   location: String,
-  visitedAt: {
-    type: Date,
-    default: Date.now
-  }
+  device: String,
+  visitedAt: { type: Date, default: Date.now }
 });
 
-// module.exports = mongoose.model('Visit', visitSchema);
-
-// Prevent OverwriteModelError
 module.exports = mongoose.models.Visit || mongoose.model('Visit', visitSchema);
+
+// const visitSchema = new mongoose.Schema({
+//   count: {
+//     type: Number,
+//     default: 0
+//   },
+//   ip: String,
+//   location: String,
+//   device: String, // 👈 Add this
+//   visitedAt: {
+//     type: Date,
+//     default: Date.now
+//   }
+// });
+
+
+// // Prevent OverwriteModelError
+// module.exports = mongoose.models.Visit || mongoose.model('Visit', visitSchema);
 
 
 

@@ -1,10 +1,17 @@
 <h2>Visitor Logs</h2>
 <table>
-  <tr><th>#</th><th>IP</th><th>Location</th><th>Visited At</th></tr>
+  <tr>
+    <th>#</th>
+    <th>Device</th>
+    <th>IP</th>
+    <th>Location</th>
+    <th>Visited At</th>
+  </tr>
   <% if (visits && visits.length > 0) { %>
     <% visits.forEach((v, i) => { %>
       <tr>
         <td><%= i + 1 %></td>
+        <td><%= v.device || "Unknown" %></td>
         <td><%= v.ip || "N/A" %></td>
         <td><%= v.location || "Unknown" %></td>
         <td><%= moment(v.visitedAt).tz("Asia/Kolkata").format("DD MMM YYYY, hh:mm A") %></td>

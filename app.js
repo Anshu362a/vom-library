@@ -2,6 +2,7 @@
 // npm install moment-timezone
 // npm install express-mongo-sanitize
 //npm install express-mongo-sanitize@2
+//npm install express-useragent
 
 
 
@@ -29,7 +30,7 @@ const mongoSanitize = require('express-mongo-sanitize'); // it prevents the Nosq
 const ExpressError = require('./utils/ExpressError');
 
 const MongoStore = require('connect-mongo');     //connect mongo 
-
+const useragent = require('express-useragent');//for device info
 
 // Models
 const Admin = require('./models/adminRegister');
@@ -123,30 +124,121 @@ console.log("India Time:", istTime); // e.g., "2025-07-12 08:31 AM"
 
 // app.set('trust proxy', true); // This is required to let Express trust x-forwarded-for
 
-app.set('trust proxy', true); // Required on Render/Heroku
+
+
+
+app.set('trust proxy', true); // Trust x-forwarded-for (for Render/Heroku)
+
+app.use(useragent.express()); // Parse device info
 
 app.use(async (req, res, next) => {
-  // Prefer real IP from proxy headers
-  const ip =
-    req.headers['x-forwarded-for']?.split(',')[0].trim() ||
-    req.ip ||
-    req.socket.remoteAddress;
-
+  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || req.socket.remoteAddress;
   const geo = geoip.lookup(ip);
-
   const location = geo
     ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
     : 'Unknown Location';
 
-  const time = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
+  const platform = req.useragent.platform || 'Unknown Platform';
+  const browser = req.useragent.browser || 'Unknown Browser';
+  const deviceType = req.useragent.isMobile ? 'Mobile' : 'Desktop';
+  const device = `${platform} - ${browser} (${deviceType})`;
 
-  console.log(`📍 Visitor IP: ${ip}`);
-  console.log(`📍 Geo Location: ${location}`);
+  const today = moment().tz("Asia/Kolkata").startOf('day');
+  const now = moment().tz("Asia/Kolkata").toDate();
 
-  await Visit.create({ ip, location, visitedAt: new Date(time) });
+  const alreadyLogged = await Visit.findOne({
+    ip,
+    device,
+    visitedAt: { $gte: today.toDate() }
+  });
+
+  if (!alreadyLogged) {
+    await Visit.create({ ip, location, device, visitedAt: now });
+    console.log("✅ New Visit Logged:", { ip, device, location });
+  } else {
+    // console.log("ℹ️ Already logged today for", ip, device);
+  }
 
   next();
 });
+
+
+
+// app.set('trust proxy', true); // Required for Render/Heroku
+// app.use(useragent.express()); // Must be before visit logging
+
+// app.use(async (req, res, next) => {
+//   const ip =
+//     req.headers['x-forwarded-for']?.split(',')[0].trim() ||
+//     req.ip ||
+//     req.socket.remoteAddress;
+
+//   const geo = geoip.lookup(ip);
+
+//   const location = geo
+//     ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
+//     : 'Unknown Location';
+
+//   const time = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
+
+//   // ✅ Construct device info
+//   const platform = req.useragent.platform || 'Unknown Platform';
+//   const browser = req.useragent.browser || 'Unknown Browser';
+//   const deviceType = req.useragent.isMobile ? 'Mobile' : 'Desktop';
+
+//   const device = `${platform} - ${browser} (${deviceType})`;
+
+//   // ✅ Avoid duplicate logs for same IP per day
+//   const today = moment().startOf('day');
+//   const existing = await Visit.findOne({
+//     ip,
+//     visitedAt: { $gte: today.toDate() }
+//   });
+
+//   if (!existing) {
+//     await Visit.create({ ip, location, device, visitedAt: new Date(time) });
+//     console.log("✅ Logged:", { ip, location, device });
+//   } else {
+//     console.log("ℹ️ Already logged today");
+//   }
+
+//   next();
+// });
+
+
+
+// app.set('trust proxy', true); // Required on Render/Heroku
+// app.use(useragent.express()); // ✅  // Middleware to get device info
+// app.use(async (req, res, next) => {
+//   // Prefer real IP from proxy headers
+//   const ip =
+//     req.headers['x-forwarded-for']?.split(',')[0].trim() ||
+//     req.ip ||
+//     req.socket.remoteAddress;
+
+//   const geo = geoip.lookup(ip);
+
+//   const location = geo
+//     ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
+//     : 'Unknown Location';
+
+//   const time = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
+//   const device = `${req.useragent.platform} - ${req.useragent.browser} (${req.useragent.isMobile ? 'Mobile' : 'Desktop'})`;
+
+//   console.log(`📍 Visitor IP: ${ip}`);
+//   console.log(`📍 Geo Location: ${location}`);
+//   console.log(`📱 Device Info: ${device}`);
+//   console.log("📱 UserAgent Info:", req.useragent);
+
+
+//   await Visit.create({ 
+//     ip, 
+//     location,
+//     device, 
+//     visitedAt: new Date(time) });
+
+//   next();
+// });
 
 
 // --------------ip and others------//
