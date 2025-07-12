@@ -1,5 +1,9 @@
 // npm install multer multer-storage-cloudinary cloudinary
 // npm install moment-timezone
+// npm install express-mongo-sanitize
+//npm install express-mongo-sanitize@2
+
+
 
 
 if (process.env.NODE_ENV !== 'production') {
@@ -18,8 +22,10 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const Visit = require('./models/visit');
 const geoip = require('geoip-lite');
-// const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+const moment = require('moment-timezone');
 
+// const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+const mongoSanitize = require('express-mongo-sanitize'); // it prevents the Nosql injection
 const ExpressError = require('./utils/ExpressError');
 
 const MongoStore = require('connect-mongo');     //connect mongo 
@@ -50,6 +56,7 @@ async function main() {
     await mongoose.connect(dbUrl);
 }
 
+
   // .then(() => console.log('✅ Connected to MongoDB'))
   // .catch(err => console.error('❌ MongoDB connection error:', err));
 
@@ -62,16 +69,68 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
+// mongoose.set('strictQuery', true);
+// app.use(mongoSanitize());
+
+
+
+
+
+app.use((req, res, next) => {
+  res.locals.moment = moment;
+  next();
+});
+
+
+const istTime = moment().tz("Asia/Kolkata").format("YYYY-MM-DD hh:mm A");
+console.log("India Time:", istTime); // e.g., "2025-07-12 08:31 AM"
+
 
 // --------------ip and others------//
 
-app.use(async (req, res, next) => {
-  const rawIp =
-    req.headers['x-forwarded-for'] ||
-    req.connection.remoteAddress ||
-    req.socket.remoteAddress;
+// app.set('trust proxy', true); // Required when behind a proxy like Render
 
-  const ip = rawIp.split(',')[0].trim(); // Handles proxies/multiple IPs
+// app.use(async (req, res, next) => {
+//   const ip =
+//     req.headers['x-forwarded-for']?.split(',')[0].trim() ||
+//     req.ip ||
+//     req.socket.remoteAddress;
+
+//   const geo = geoip.lookup(ip);
+//   const location = geo
+//     ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
+//     : 'Unknown Location';
+
+//   const time = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
+
+//   // ❌ Don't log the same IP multiple times in a day
+//   const today = moment().startOf('day');
+//   const existingVisit = await Visit.findOne({
+//     ip,
+//     visitedAt: { $gte: today.toDate() }
+//   });
+
+//   if (!existingVisit) {
+//     await Visit.create({ ip, location, visitedAt: new Date(time) });
+//     console.log("✅ New unique visit recorded");
+//   } else {
+//     console.log("ℹ️ IP already visited today");
+//   }
+
+//   next();
+// });
+
+
+// app.set('trust proxy', true); // This is required to let Express trust x-forwarded-for
+
+app.set('trust proxy', true); // Required on Render/Heroku
+
+app.use(async (req, res, next) => {
+  // Prefer real IP from proxy headers
+  const ip =
+    req.headers['x-forwarded-for']?.split(',')[0].trim() ||
+    req.ip ||
+    req.socket.remoteAddress;
 
   const geo = geoip.lookup(ip);
 
@@ -79,28 +138,17 @@ app.use(async (req, res, next) => {
     ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
     : 'Unknown Location';
 
-  await Visit.create({ count: 1, ip, location });
+  const time = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
+
+  console.log(`📍 Visitor IP: ${ip}`);
+  console.log(`📍 Geo Location: ${location}`);
+
+  await Visit.create({ ip, location, visitedAt: new Date(time) });
 
   next();
 });
 
 
-
-// app.use(async (req, res, next) => {
-//   // Get visitor IP
-//   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-
-//   // Get location from IP
-//   const geo = geoip.lookup(ip);
-//   const location = geo
-//     ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
-//     : 'Unknown Location';
-
-//   // Save each visit with IP & location
-//   await Visit.create({ count: 1, ip, location });
-
-//   next();
-// });
 // --------------ip and others------//
 
 
@@ -119,12 +167,22 @@ app.use(session(sessionConfig));
 app.use(flash());
 
 // Flash Messages + Locals
+// app.use((req, res, next) => {
+//   res.locals.success = req.flash('success');
+//   res.locals.error = req.flash('error');
+//   res.locals.currentUser = req.user;
+//   next();
+// });
+
 app.use((req, res, next) => {
-  res.locals.success = req.flash('success');
-  res.locals.error = req.flash('error');
-  res.locals.currentUser = req.user;
+  res.locals.success = req.flash('success') || [];
+  res.locals.error = req.flash('error') || [];
+  res.locals.currentUser = req.user || null;
   next();
 });
+
+// app.use(mongoSanitize({ replaceWith: '_' }));
+
 
 // Passport Configuration
 app.use(passport.initialize());
@@ -189,11 +247,26 @@ app.use(async (req, res, next) => {
   next();
 });
 
+
+
+
 // Catch 404 - Not Found
 // app.all('*', (req, res, next) => {
 //   next(new ExpressError(404, 'Page Not Found'));
 // });
 // Catch-all 404 handler (safe version)
+
+
+app.use((req, res, next) => {
+  Object.defineProperty(req, 'query', {
+    set() {
+      console.error('❌ Someone tried to overwrite req.query here!');
+    },
+  });
+  next();
+});
+
+
 app.use((req, res) => {
   res.status(404).render('error', {
     err: { statusCode: 404, message: 'Page Not Found' }
@@ -209,7 +282,7 @@ app.use((err, req, res, next) => {
 });
 
 
-const PORT = 8085;
+const PORT = process.env.PORT || 8085;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
