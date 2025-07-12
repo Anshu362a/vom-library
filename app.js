@@ -152,12 +152,12 @@ app.use(async (req, res, next) => {
     visitedAt: { $gte: today.toDate() }
   });
 
-  if (!alreadyLogged) {
-    await Visit.create({ ip, location, device, visitedAt: now });
-    console.log("✅ New Visit Logged:", { ip, device, location });
-  } else {
-    // console.log("ℹ️ Already logged today for", ip, device);
-  }
+  // if (!alreadyLogged) {
+  //   await Visit.create({ ip, location, device, visitedAt: now });
+  //   console.log("✅ New Visit Logged:", { ip, device, location });
+  // } else {
+  //   // console.log("ℹ️ Already logged today for", ip, device);
+  // }
 
   next();
 });
