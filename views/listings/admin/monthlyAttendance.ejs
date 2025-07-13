@@ -1,19 +1,16 @@
 <section class="monthly-attendance-section">
   <div class="container2">
-    <h2>📅 Monthly Attendance Report - <%= monthName %> <%= year %></h2>
+    <h2>📅 Monthly Attendance Report</h2>
 
-    <form class="month-form" method="GET" action="/admin/monthly-attendance">
-      <label for="month">Select Month:</label>
-      <input type="month" id="month" name="month" value="<%= `${year}-${String(month).padStart(2, '0')}` %>" required>
-
+    <form class="month-form" method="GET">
+      <input type="month" name="month" value="<%= year %>-<%= String(month).padStart(2, '0') %>">
       <input type="text" name="search" placeholder="Search by name or ID" value="<%= search || '' %>">
-
-      <button type="submit">🔍 Search</button>
+      <button type="submit">🔍 Filter</button>
     </form>
 
-    <% if (students.length === 0) { %>
-      <p class="no-records">❌ No attendance records found for this month.</p>
-    <% } else { %>
+    <h3 style="text-align:center; color:#FA812F;"><%= monthName %> <%= year %></h3>
+
+    <div class="table-wrapper">
       <table class="monthly-table">
         <thead>
           <tr>
@@ -29,42 +26,34 @@
           </tr>
         </thead>
         <tbody>
-          <% let index = 1;
-             students.forEach(student => {
-               let presentCount = 0;
-               let absentCount = 0;
-
-               student.attendance.forEach(record => {
-                 const attDate = new Date(record.entryTime || record.date);
-                 if (attDate.getMonth() === month - 1 && attDate.getFullYear() === year) {
-                   if (record.status === 'Present') presentCount++;
-                   if (record.status === 'Absent') absentCount++;
-
-                   let duration = '—';
-                   if (record.entryTime && record.exitTime) {
-                     const diffMs = new Date(record.exitTime) - new Date(record.entryTime);
-                     const hrs = Math.floor(diffMs / (1000 * 60 * 60));
-                     const mins = Math.floor((diffMs / (1000 * 60)) % 60);
-                     duration = `${hrs}h ${mins}m`;
-                   }
+          <% students.forEach((student, idx) => {
+              const totalPresent = student.totalDaysPresent || 0;
+              const totalAbsent = (student.totalDaysInMonth || 0) - totalPresent;
+              const hasRecords = student.monthlyRecords && student.monthlyRecords.length > 0;
           %>
-            <tr>
-              <td><%= index++ %></td>
-              <td><%= student.name %></td>
-              <td><%= student.studentId %></td>
-              <td><%= presentCount %></td>
-              <td><%= absentCount %></td>
-              <td><%= attDate.toLocaleDateString() %></td>
-              <td><%= record.entryTime ? new Date(record.entryTime).toLocaleTimeString() : '—' %></td>
-              <td><%= record.exitTime ? new Date(record.exitTime).toLocaleTimeString() : '—' %></td>
-              <td><%= duration %></td>
-            </tr>
-          <%   }
-               });
-             });
-          %>
+          <tr>
+            <td rowspan="<%= hasRecords ? student.monthlyRecords.length : 1 %>"><%= idx + 1 %></td>
+            <td rowspan="<%= hasRecords ? student.monthlyRecords.length : 1 %>"><%= student.name %></td>
+            <td rowspan="<%= hasRecords ? student.monthlyRecords.length : 1 %>"><%= student.studentId %></td>
+            <td rowspan="<%= hasRecords ? student.monthlyRecords.length : 1 %>"><%= totalPresent %></td>
+            <td rowspan="<%= hasRecords ? student.monthlyRecords.length : 1 %>"><%= totalAbsent %></td>
+
+            <% if (hasRecords) { %>
+              <% student.monthlyRecords.forEach((record, i) => { %>
+                <% if (i !== 0) { %><tr><% } %>
+                <td><%= record.date %></td>
+                <td><%= record.entry %></td>
+                <td><%= record.exit %></td>
+                <td><%= record.duration %></td>
+                <% if (i !== 0) { %></tr><% } %>
+              <% }) %>
+            <% } else { %>
+              <td colspan="4">No attendance data</td>
+            <% } %>
+          </tr>
+          <% }) %>
         </tbody>
       </table>
-    <% } %>
+    </div>
   </div>
 </section>

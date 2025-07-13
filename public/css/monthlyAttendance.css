@@ -11,19 +11,20 @@
   background-color: #3f0a54;
   padding: 30px;
   border-radius: 16px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
-h2 {
+h2, h3 {
   text-align: center;
   color: #FA812F;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .month-form {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
   justify-content: center;
+  gap: 12px;
   margin-bottom: 25px;
 }
 
@@ -45,6 +46,7 @@ h2 {
   color: #fff;
   font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .month-form button:hover {
@@ -55,15 +57,22 @@ h2 {
   text-align: center;
   color: #FF6F61;
   font-weight: bold;
+  margin-top: 20px;
+}
+
+/* Table Styles */
+.table-wrapper {
+  overflow-x: auto;
 }
 
 .monthly-table {
   width: 100%;
   border-collapse: collapse;
   background-color: #fff;
-  color: #000;
+  color: #222;
   border-radius: 10px;
-  overflow: hidden;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .monthly-table th,
@@ -71,33 +80,60 @@ h2 {
   padding: 12px;
   text-align: center;
   font-size: 14px;
+  border: 1px solid #ddd;
+  white-space: nowrap;
 }
 
 .monthly-table thead {
   background-color: #FA812F;
   color: #fff;
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
 .monthly-table tbody tr:nth-child(even) {
-  background-color: #f8f8f8;
+  background-color: #fdf5f2;
+}
+
+.monthly-table tbody tr:nth-child(odd) {
+  background-color: #fff;
 }
 
 .monthly-table tbody tr:hover {
-  background-color: #eee;
+  background-color: #ffe8cc;
+  transition: background-color 0.2s;
 }
 
+.monthly-table td[rowspan] {
+  background-color: #fff3e6;
+  font-weight: 600;
+  color: #333;
+}
 
-
-
-/* /////////////// */
 .summary-row {
-  background-color: #f6f6f6;
+  background-color: #f0f0f0;
   font-weight: bold;
   color: #333;
 }
 
-.no-records {
-  margin-top: 20px;
-  font-weight: bold;
-  color: red;
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .month-form {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .monthly-table {
+    font-size: 12px;
+  }
+
+  .monthly-table th,
+  .monthly-table td {
+    padding: 8px;
+  }
+
+  h2, h3 {
+    font-size: 18px;
+  }
 }
+

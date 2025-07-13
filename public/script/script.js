@@ -49,30 +49,3 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-
- // ✅ Auto-dismiss flash messages
-    // setTimeout(() => {
-    //   const successAlert = document.getElementById("flash-success");
-    //   const errorAlert = document.getElementById("flash-error");
-    //   if (successAlert) {
-    //     successAlert.classList.remove("show");
-    //     setTimeout(() => successAlert.remove(), 500); // remove after fade
-    //   }
-    //   if (errorAlert) {
-    //     errorAlert.classList.remove("show");
-    //     setTimeout(() => errorAlert.remove(), 500);
-    //   }
-    // }, 3000);
-
-
-  // Auto-dismiss flash messages after 3 seconds
-  // setTimeout(() => {
-  //   const successAlert = document.getElementById('flash-success');
-  //   const errorAlert = document.getElementById('flash-error');
-  //   if (successAlert) {
-  //     successAlert.classList.remove('show'); // Bootstrap fades it
-  //   }
-  //   if (errorAlert) {
-  //     errorAlert.classList.remove('show');
-  //   }
-  // }, 3000);

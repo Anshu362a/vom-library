@@ -35,13 +35,7 @@ const validate = (schema) => (req, res, next) => {
   next();
 };
 
-// router.get('/register', async (req, res) => {
-//   const adminCount = await Admin.countDocuments();
-//   console.log("👀 Admin count:", adminCount); // Debug log
-//   // console.log("📧 Admin emails:", admins.map(admin => admin.email));
-//   if (adminCount > 0) return res.redirect('/admin/login');
-//   res.render('listings/admin/adminRegister');
-// });
+
 router.get("/register", async (req, res) => {
   const adminCount = await Admin.countDocuments();
   if (adminCount > 0) return res.redirect("/admin/login");
@@ -94,15 +88,6 @@ router.post("/register", async (req, res) => {
 });
 
 // -------------post---------//
-
-// router.post('/register', validate(adminRegisterSchema), catchAsync(async (req, res) => {
-//   const { email, password } = req.body;
-//   const registeredAdmin = await Admin.register(new Admin({ email }), password);
-//   req.login(registeredAdmin, err => {
-//     if (err) return res.send('Login failed.');
-//     res.redirect('/admin/dashboard');
-//   });
-// }));
 
 router.get("/login", (req, res) => {
   res.render("listings/admin/login");
@@ -279,6 +264,8 @@ router.post("/mark-attendance", isAdminLoggedIn, async (req, res) => {
 // -------mark attendence end----------//
 
 // Today attendance
+
+
 router.get("/today-attendance", isAdminLoggedIn, async (req, res) => {
   try {
     const allStudents = await Student.find({});
@@ -293,7 +280,27 @@ router.get("/today-attendance", isAdminLoggedIn, async (req, res) => {
       );
 
       if (todayRecord) {
-        present.push(student);
+        const entryTimeFormatted = moment(todayRecord.entryTime).tz('Asia/Kolkata').format('hh:mm:ss A');
+        const exitTimeFormatted = todayRecord.exitTime
+          ? moment(todayRecord.exitTime).tz('Asia/Kolkata').format('hh:mm:ss A')
+          : '—';
+
+        // Duration in hrs/mins
+        let duration = '—';
+        if (todayRecord.entryTime && todayRecord.exitTime) {
+          const diff = new Date(todayRecord.exitTime) - new Date(todayRecord.entryTime);
+          const hrs = Math.floor(diff / 1000 / 60 / 60);
+          const mins = Math.floor((diff / 1000 / 60) % 60);
+          duration = `${hrs}h ${mins}m`;
+        }
+
+        present.push({
+          ...student.toObject(),
+          entryTimeFormatted,
+          exitTimeFormatted,
+          status: todayRecord.status,
+          duration,
+        });
       } else {
         absent.push(student);
       }
@@ -311,6 +318,38 @@ router.get("/today-attendance", isAdminLoggedIn, async (req, res) => {
   }
 });
 
+// router.get("/today-attendance", isAdminLoggedIn, async (req, res) => {
+//   try {
+//     const allStudents = await Student.find({});
+//     const today = new Date().toDateString();
+
+//     const present = [];
+//     const absent = [];
+
+//     allStudents.forEach((student) => {
+//       const todayRecord = student.attendance.find(
+//         (a) => new Date(a.entryTime).toDateString() === today
+//       );
+
+//       if (todayRecord) {
+//         present.push(student);
+//       } else {
+//         absent.push(student);
+//       }
+//     });
+
+//     res.render("listings/admin/todayAttendance", {
+//       students: present,
+//       totalPresent: present.length,
+//       totalAbsent: absent.length,
+//       absentStudents: absent,
+//     });
+//   } catch (err) {
+//     console.error("Error fetching today attendance:", err);
+//     res.send("Something went wrong.");
+//   }
+// });
+//-----Today Attendance end------//
 // Check dues
 router.get("/check-dues", isAdminLoggedIn, async (req, res) => {
   try {
@@ -611,64 +650,376 @@ router.get(
 
 //---------monthlyAttendance start-----------//
 
+
+
 router.get("/monthly-attendance", isAdminLoggedIn, async (req, res) => {
   const { month, search } = req.query;
   const selectedDate = month ? new Date(month) : new Date();
+
   const year = selectedDate.getFullYear();
-  const monthNum = selectedDate.getMonth() + 1;
+  const monthNum = selectedDate.getMonth(); // 0-indexed
+
+  const today = new Date();
+  const todayDate = today.getMonth() === monthNum && today.getFullYear() === year
+    ? today.getDate()
+    : new Date(year, monthNum + 1, 0).getDate(); // limit to current day or month's last date
 
   let query = {};
   if (search) {
     query = {
       $or: [
         { name: { $regex: search, $options: "i" } },
-        { studentId: { $regex: search, $options: "i" } },
-      ],
+        { studentId: { $regex: search, $options: "i" } }
+      ]
     };
   }
 
   const students = await Student.find(query).lean();
 
+  students.forEach(student => {
+    const monthlyRecords = [];
+    let totalDaysPresent = 0;
+
+    // 1. Find first attendance date in the selected month
+    const firstAttendanceInMonth = student.attendance?.find(a => {
+      const d = new Date(a.entryTime);
+      return d.getFullYear() === year && d.getMonth() === monthNum;
+    });
+
+    if (firstAttendanceInMonth) {
+      const joinDay = new Date(firstAttendanceInMonth.entryTime).getDate();
+
+      for (let day = joinDay; day <= todayDate; day++) {
+        const currentDate = new Date(year, monthNum, day);
+        const dayStr = currentDate.toDateString();
+
+        const record = student.attendance?.find(a =>
+          new Date(a.entryTime).toDateString() === dayStr
+        );
+
+        if (record) {
+          totalDaysPresent++;
+          const entry = new Date(record.entryTime).toLocaleTimeString();
+          const exit = record.exitTime ? new Date(record.exitTime).toLocaleTimeString() : '—';
+          let duration = '—';
+
+          if (record.entryTime && record.exitTime) {
+            const diff = new Date(record.exitTime) - new Date(record.entryTime);
+            const hrs = Math.floor(diff / 1000 / 60 / 60);
+            const mins = Math.floor((diff / 1000 / 60) % 60);
+            duration = `${hrs}h ${mins}m`;
+          }
+
+          monthlyRecords.push({
+            date: dayStr,
+            entry,
+            exit,
+            status: record.status,
+            duration
+          });
+        } else {
+          // Mark absent day after joining and before today
+          monthlyRecords.push({
+            date: dayStr,
+            entry: '—',
+            exit: '—',
+            status: 'Absent',
+            duration: '—'
+          });
+        }
+      }
+
+      student.totalDaysInMonth = todayDate - joinDay + 1;
+      student.totalDaysPresent = totalDaysPresent;
+      student.monthlyRecords = monthlyRecords;
+    } else {
+      student.totalDaysInMonth = 0;
+      student.totalDaysPresent = 0;
+      student.monthlyRecords = [];
+    }
+  });
+
   res.render("listings/admin/monthlyAttendance", {
     students,
-    month: monthNum,
+    month: monthNum + 1,
     year,
     monthName: selectedDate.toLocaleString("default", { month: "long" }),
-    search,
+    search
   });
 });
 
-// router.get('/monthly-attendance', isAdminLoggedIn, async (req, res) => {
-//   const { month, status: filterStatus } = req.query;
 
-//   const selectedMonth = month ? new Date(month) : new Date(); // fallback to current month
-//   const year = selectedMonth.getFullYear();
-//   const monthNum = selectedMonth.getMonth() + 1;
 
-//   const students = await Student.find({}).lean(); // .lean() for performance if you don't need Mongoose docs
 
-//   res.render('listings/admin/monthlyAttendance', {
+// router.get("/monthly-attendance", isAdminLoggedIn, async (req, res) => {
+//   const { month, search } = req.query;
+//   const selectedDate = month ? new Date(month) : new Date();
+
+//   const year = selectedDate.getFullYear();
+//   const monthNum = selectedDate.getMonth(); // 0-indexed
+
+//   const endOfMonth = new Date(year, monthNum + 1, 0);
+//   const totalDaysInMonth = endOfMonth.getDate();
+
+//   let query = {};
+//   if (search) {
+//     query = {
+//       $or: [
+//         { name: { $regex: search, $options: "i" } },
+//         { studentId: { $regex: search, $options: "i" } }
+//       ]
+//     };
+//   }
+
+//   const students = await Student.find(query).lean();
+
+//   students.forEach(student => {
+//     const monthlyRecords = [];
+//     let totalDaysPresent = 0;
+
+//     // Filter only this month's attendance
+//     const thisMonthAttendance = student.attendance?.filter(a => {
+//       const attDate = new Date(a.entryTime);
+//       return (
+//         attDate.getFullYear() === year &&
+//         attDate.getMonth() === monthNum
+//       );
+//     }) || [];
+
+//     // Find the first day student marked attendance in this month
+//     const firstAttendanceDate =
+//       thisMonthAttendance.length > 0
+//         ? new Date(thisMonthAttendance[0].entryTime).getDate()
+//         : 1; // default to 1 if no attendance
+
+//     for (let day = firstAttendanceDate; day <= totalDaysInMonth; day++) {
+//       const date = new Date(year, monthNum, day);
+//       const dayStr = date.toDateString();
+
+//       const record = thisMonthAttendance.find(a =>
+//         new Date(a.entryTime).toDateString() === dayStr
+//       );
+
+//       if (record) {
+//         totalDaysPresent++;
+
+//         const entry = new Date(record.entryTime).toLocaleTimeString();
+//         const exit = record.exitTime ? new Date(record.exitTime).toLocaleTimeString() : '—';
+//         let duration = '—';
+
+//         if (record.entryTime && record.exitTime) {
+//           const diff = new Date(record.exitTime) - new Date(record.entryTime);
+//           const hrs = Math.floor(diff / 1000 / 60 / 60);
+//           const mins = Math.floor((diff / 1000 / 60) % 60);
+//           duration = `${hrs}h ${mins}m`;
+//         }
+
+//         monthlyRecords.push({
+//           date: date.toDateString(),
+//           entry,
+//           exit,
+//           status: record.status,
+//           duration
+//         });
+//       } else {
+//         // Absent on this day after joining
+//         monthlyRecords.push({
+//           date: date.toDateString(),
+//           entry: '—',
+//           exit: '—',
+//           status: 'Absent',
+//           duration: '—'
+//         });
+//       }
+//     }
+
+//     student.totalDaysInMonth = totalDaysInMonth - (firstAttendanceDate - 1);
+//     student.totalDaysPresent = totalDaysPresent;
+//     student.totalDaysAbsent = student.totalDaysInMonth - totalDaysPresent;
+//     student.monthlyRecords = monthlyRecords;
+//   });
+
+//   res.render("listings/admin/monthlyAttendance", {
 //     students,
-//     month: monthNum,
+//     month: monthNum + 1,
 //     year,
-//     monthName: selectedMonth.toLocaleString('default', { month: 'long' }),
-//     filterStatus // ✅ send this to the EJS template
+//     monthName: selectedDate.toLocaleString("default", { month: "long" }),
+//     search
 //   });
 // });
 
-// router.get('/monthly-attendance', isAdminLoggedIn, async (req, res) => {
-//   const { month } = req.query; // Format: "2025-07"
-//   const [year, monthNum] = month ? month.split('-').map(Number) : [new Date().getFullYear(), new Date().getMonth() + 1];
 
-//   const students = await Student.find({}).lean();
 
-//   res.render('listings/admin/monthlyAttendance', {
+// router.get("/monthly-attendance", isAdminLoggedIn, async (req, res) => {
+//   const { month, search } = req.query;
+//   const selectedDate = month ? new Date(month) : new Date();
+
+//   const year = selectedDate.getFullYear();
+//   const monthNum = selectedDate.getMonth(); // 0-indexed
+
+//   const startOfMonth = new Date(year, monthNum, 1);
+//   const endOfMonth = new Date(year, monthNum + 1, 0);
+
+//   const totalDaysInMonth = endOfMonth.getDate();
+
+//   let query = {};
+//   if (search) {
+//     query = {
+//       $or: [
+//         { name: { $regex: search, $options: "i" } },
+//         { studentId: { $regex: search, $options: "i" } }
+//       ]
+//     };
+//   }
+
+//   const students = await Student.find(query).lean();
+
+//   students.forEach(student => {
+//     const monthlyRecords = [];
+//     let totalDaysPresent = 0;
+
+//     for (let day = 1; day <= totalDaysInMonth; day++) {
+//       const date = new Date(year, monthNum, day);
+//       const dayStr = date.toDateString();
+
+//       const record = student.attendance?.find(a =>
+//         new Date(a.entryTime).toDateString() === dayStr
+//       );
+
+//       if (record) {
+//         totalDaysPresent++;
+//         const entry = new Date(record.entryTime).toLocaleTimeString();
+//         const exit = record.exitTime ? new Date(record.exitTime).toLocaleTimeString() : '—';
+//         let duration = '—';
+
+//         if (record.entryTime && record.exitTime) {
+//           const diff = new Date(record.exitTime) - new Date(record.entryTime);
+//           const hrs = Math.floor(diff / 1000 / 60 / 60);
+//           const mins = Math.floor((diff / 1000 / 60) % 60);
+//           duration = `${hrs}h ${mins}m`;
+//         }
+
+//         monthlyRecords.push({
+//           date: date.toDateString(),
+//           entry,
+//           exit,
+//           status: record.status,
+//           duration
+//         });
+//       }
+//     }
+
+//     student.totalDaysInMonth = totalDaysInMonth;
+//     student.totalDaysPresent = totalDaysPresent;
+//     student.monthlyRecords = monthlyRecords;
+//   });
+
+//   res.render("listings/admin/monthlyAttendance", {
+//     students,
+//     month: monthNum + 1,
+//     year,
+//     monthName: selectedDate.toLocaleString("default", { month: "long" }),
+//     search
+//   });
+// });
+
+
+
+
+
+// router.get("/monthly-attendance", isAdminLoggedIn, async (req, res) => {
+//   const { month, search } = req.query;
+//   const selectedDate = month ? new Date(month) : new Date();
+//   const year = selectedDate.getFullYear();
+//   const monthNum = selectedDate.getMonth(); // 0-based for Date, so do not add +1 here yet
+
+//   let query = {};
+//   if (search) {
+//     query = {
+//       $or: [
+//         { name: { $regex: search, $options: "i" } },
+//         { studentId: { $regex: search, $options: "i" } },
+//       ],
+//     };
+//   }
+
+//   const students = await Student.find(query).lean();
+
+//   const filteredStudents = students.map((student) => {
+//     const monthlyRecords = student.attendance
+//       .filter((record) => {
+//         const d = new Date(record.entryTime);
+//         return d.getFullYear() === year && d.getMonth() === monthNum;
+//       })
+//       .map((record) => {
+//         const entry = moment(record.entryTime).tz("Asia/Kolkata").format("DD MMM, hh:mm:ss A");
+//         const exit = record.exitTime
+//           ? moment(record.exitTime).tz("Asia/Kolkata").format("DD MMM, hh:mm:ss A")
+//           : "—";
+//         let duration = "—";
+
+//         if (record.entryTime && record.exitTime) {
+//           const diff = new Date(record.exitTime) - new Date(record.entryTime);
+//           const hrs = Math.floor(diff / 1000 / 60 / 60);
+//           const mins = Math.floor((diff / 1000 / 60) % 60);
+//           duration = `${hrs}h ${mins}m`;
+//         }
+
+//         return {
+//           date: moment(record.entryTime).tz("Asia/Kolkata").format("DD MMM YYYY"),
+//           entry,
+//           exit,
+//           status: record.status,
+//           duration,
+//         };
+//       });
+
+//     return {
+//       ...student,
+//       monthlyRecords,
+//       totalDaysPresent: monthlyRecords.length,
+//     };
+//   });
+
+//   res.render("listings/admin/monthlyAttendance", {
+//     students: filteredStudents,
+//     month: monthNum + 1, // Send 1-based month to EJS
+//     year,
+//     monthName: selectedDate.toLocaleString("default", { month: "long" }),
+//     search,
+//   });
+// });
+
+
+
+// router.get("/monthly-attendance", isAdminLoggedIn, async (req, res) => {
+//   const { month, search } = req.query;
+//   const selectedDate = month ? new Date(month) : new Date();
+//   const year = selectedDate.getFullYear();
+//   const monthNum = selectedDate.getMonth() + 1;
+
+//   let query = {};
+//   if (search) {
+//     query = {
+//       $or: [
+//         { name: { $regex: search, $options: "i" } },
+//         { studentId: { $regex: search, $options: "i" } },
+//       ],
+//     };
+//   }
+
+//   const students = await Student.find(query).lean();
+
+//   res.render("listings/admin/monthlyAttendance", {
 //     students,
 //     month: monthNum,
 //     year,
-//     monthName: new Date(year, monthNum - 1).toLocaleString('default', { month: 'long' })
+//     monthName: selectedDate.toLocaleString("default", { month: "long" }),
+//     search,
 //   });
 // });
+
+
 
 //---------monthlyAttendance end-----------//
 

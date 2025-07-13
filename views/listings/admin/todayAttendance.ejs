@@ -1,17 +1,25 @@
+
 <h2>📆 Today's Attendance</h2>
 
 <div class="summary-boxes">
   <p><strong>✅ Total Present:</strong> <%= totalPresent %></p>
   <p><strong>❌ Not Marked:</strong> <%= totalAbsent %></p>
 
-  <form action="/admin/today-attendance/export-csv" method="GET" style="display:inline;">
-  <button class="btn btn-sm btn-success" type="submit">📄 Export CSV</button>
-</form>
+  <form
+    action="/admin/today-attendance/export-csv"
+    method="GET"
+    style="display: inline"
+  >
+    <button class="btn btn-sm btn-success" type="submit">📄 Export CSV</button>
+  </form>
 
-  <form action="/admin/today-attendance/export-pdf" method="GET" style="display:inline;">
-  <button class="btn btn-sm btn-danger" type="submit">📝 Export PDF</button>
-</form>
-
+  <form
+    action="/admin/today-attendance/export-pdf"
+    method="GET"
+    style="display: inline"
+  >
+    <button class="btn btn-sm btn-danger" type="submit">📝 Export PDF</button>
+  </form>
 </div>
 
 <table>
@@ -27,32 +35,20 @@
     </tr>
   </thead>
   <tbody>
-    <% students.forEach((student, idx) => {
-      const today = student.attendance.find(a => 
-        new Date(a.entryTime).toDateString() === new Date().toDateString()
-      );
-      if (today) {
-        let duration = '—';
-        if (today.entryTime && today.exitTime) {
-          const entry = new Date(today.entryTime);
-          const exit = new Date(today.exitTime);
-          const diffMs = exit - entry;
-          const hours = Math.floor(diffMs / 1000 / 60 / 60);
-          const mins = Math.floor((diffMs / 1000 / 60) % 60);
-          duration = `${hours}h ${mins}m`;
-        }
-    %>
-      <tr>
-        <td><%= idx + 1 %></td>
-        <td><%= student.name %></td>
-        <td><%= student.studentId %></td>
-        <td><%= new Date(today.entryTime).toLocaleTimeString() %></td>
-        <td><%= today.exitTime ? new Date(today.exitTime).toLocaleTimeString() : '—' %></td>
-        <td><%= today.status %></td>
-        <td><%= duration %></td>
-      </tr>
-    <% }}) %>
-  </tbody>
+  <% students.forEach((student, idx) => { %>
+    <tr>
+      <td><%= idx + 1 %></td>
+      <td><%= student.name %></td>
+      <td><%= student.studentId %></td>
+      <td><%= student.entryTimeFormatted %></td>
+      <td><%= student.exitTimeFormatted %></td>
+      <td><%= student.status %></td>
+      <td><%= student.duration %></td>
+    </tr>
+  <% }) %>
+</tbody>
+
+
 </table>
 
 <h3>❌ Students Absent Today</h3>
@@ -67,12 +63,11 @@
   </thead>
   <tbody>
     <% absentStudents.forEach((s, idx) => { %>
-      <tr>
-        <td><%= idx + 1 %></td>
-        <td><%= s.name %></td>
-        <td><%= s.studentId %></td>
-      </tr>
+    <tr>
+      <td><%= idx + 1 %></td>
+      <td><%= s.name %></td>
+      <td><%= s.studentId %></td>
+    </tr>
     <% }) %>
   </tbody>
 </table>
-

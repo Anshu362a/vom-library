@@ -61,13 +61,7 @@ if (error) {
     errors
   });
 }
-  // const { error } = studentRegisterSchema.validate(req.body);
-  // if (error) {
-  //   return res.render('listings/student/register', {
-  //     formData: req.body,
-  //     validationError: error.details[0].message
-  //   });
-  // }
+ 
 
   try {
     const { name, email, mobile, password } = req.body;

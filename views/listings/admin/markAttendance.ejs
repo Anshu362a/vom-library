@@ -3,73 +3,77 @@
     <h2>📋 Mark Attendance</h2>
 
     <% if (!student) { %>
-      <form method="POST" action="/admin/mark-attendance" class="attendance-form">
-        <label for="studentId">Enter Student ID:</label>
-        <input type="text" name="studentId" id="studentId" required placeholder="20250001" />
-        <button type="submit">Submit</button>
-      </form>
+    <form method="POST" action="/admin/mark-attendance" class="attendance-form">
+      <label for="studentId">Enter Student ID:</label>
+      <input
+        type="text"
+        name="studentId"
+        id="studentId"
+        required
+        placeholder="2025XXXX"
+      />
+      <button type="submit">Submit</button>
+    </form>
 
-      <% if (error) { %>
-        <p class="error"><%= error %></p>
+    <% if (error) { %>
+    <p class="error"><%= error %></p>
+    <% } %> <% } else { %>
+    <div class="student-card">
+      <img
+        src="<%= student.profileImage || '/images/default-user.png' %>"
+        alt="Student Image"
+      />
+
+      <h3><%= student.name.toUpperCase() %></h3>
+      <p><strong>ID No:</strong> <%= student.studentId %></p>
+      <p><strong>Email:</strong> <%= student.email %></p>
+
+      <% if (markedAs === 'entry') { %>
+      <p class="success">✅ Entry marked at <%= entryTime %></p>
+      <% } else if (markedAs === 'exit' && exitTime) { %>
+      <p class="exit">👋 Exit marked at <%= exitTime %></p>
+      <% } else { %>
+      <p class="info">
+        👋
+        <b
+          >Exit marked at <%= exitTime %> <br />
+          ℹ️ Attendance already marked</b
+        >
+      </p>
+      <% } %> <% if (markedAs === 'entry' && entryTime) { %>
+      <p class="success">✅ Entry marked at <%= entryTime %></p>
+      <% } %> <% if (markedAs === 'exit' && exitTime) { %>
+      <p class="exit">👋 Exit marked at <%= exitTime %></p>
       <% } %>
-    <% } else { %>
-      <div class="student-card">
-        <img src="<%= student.profileImage || '/images/default-user.png' %>" alt="Student Image">
 
-        <h3><%= student.name.toUpperCase() %></h3>
-        <p><strong>ID No:</strong> <%= student.studentId %></p>
-        <p><strong>Email:</strong> <%= student.email %></p>
-        <p><strong>Mobile:</strong> <%= student.mobile %></p>
-        
-        <% if (markedAs === 'entry') { %>
-          <p class="success">✅ Entry marked at <%= entryTime %></p>
-          <% } else if (markedAs === 'exit' && exitTime) { %>
-            <p class="exit">👋 Exit marked at <%= exitTime %></p>
-          <% } else { %>
-            <p class="info">👋 <b>Exit marked at <%= exitTime %> <br/> ℹ️ Attendance already marked</b></p>
-          <% } %>
-
-
-
-        <% if (markedAs === 'entry' && entryTime) { %>
-  <p class="success">✅ Entry marked at <%= entryTime %></p>
-<% } %>
-
-<% if (markedAs === 'exit' && exitTime) { %>
-  <p class="exit">👋 Exit marked at <%= exitTime %></p>
-<% } %>
-
-       
-        <a href="/admin/mark-attendance" class="new-entry">Mark another</a>
-      </div>
-    <% } %>
-
-    <% if (studentsIn && studentsIn.length > 0) { %>
-      <div class="in-table">
-        <h3>🧍 Students Currently IN</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Entry Time</th>
-              <th>Exit Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% studentsIn.forEach((s, idx) => { %>
-              <tr>
-                <td><%= idx + 1 %></td>
-                <td><%= s.studentId %></td>
-                <td><%= s.name %></td>
-                <td><%= new Date(s.attendance[s.attendance.length - 1].entryTime).toLocaleTimeString() %></td>
-                <td><%= new Date(s.attendance[s.attendance.length - 1].exitTime).toLocaleTimeString() %></td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      </div>
+      <a href="/admin/mark-attendance" class="new-entry">Mark another</a>
+    </div>
+    <% } %> <% if (studentsIn && studentsIn.length > 0) { %>
+    <div class="in-table">
+      <h3>🧍 Students Currently IN</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Sr.No.</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Entry Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% studentsIn.forEach((s, idx) => { %>
+          <tr>
+            <td><%= idx + 1 %></td>
+            <td><%= s.studentId %></td>
+            <td><%= s.name %></td>
+            <td>
+              <%= new Date(s.attendance[s.attendance.length -1].entryTime).toLocaleTimeString('en-IN', { timeZone:'Asia/Kolkata' }) %>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
     <% } %>
   </div>
 </section>
