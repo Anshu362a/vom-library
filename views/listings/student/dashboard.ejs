@@ -41,20 +41,48 @@
       </div>
 
       <!-- Attendance History -->
-      <div class="attendance-section">
-        <h3>📖 Attendance History</h3>
-        <% if (student.attendance.length === 0) { %>
-          <p>No attendance records available.</p>
-        <% } else { %>
-          <ul>
-            <% student.attendance.forEach(att => { %>
-              <li>
-                <strong><%= new Date(att.date).toDateString() %></strong>: <%= att.status %>
-              </li>
-            <% }) %>
-          </ul>
-        <% } %>
-      </div>
+      <<div class="attendance-section">
+  <h3>📖 Attendance History</h3>
+
+  <% if (student.attendance.length === 0) { %>
+    <p>No attendance records available.</p>
+  <% } else { %>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Entry</th>
+          <th>Exit</th>
+          <th>Total Time</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% student.attendance.forEach(att => {
+            const entry = att.entryTime ? new Date(att.entryTime) : null;
+            const exit = att.exitTime ? new Date(att.exitTime) : null;
+
+            let duration = '—';
+            if (entry && exit) {
+              const diffMs = exit - entry;
+              const hrs = Math.floor(diffMs / (1000 * 60 * 60));
+              const mins = Math.floor((diffMs / (1000 * 60)) % 60);
+              duration = `${hrs}h ${mins}m`;
+            }
+        %>
+          <tr>
+            <td><%= new Date(att.date).toLocaleDateString() %></td>
+            <td><%= entry ? entry.toLocaleTimeString() : '—' %></td>
+            <td><%= exit ? exit.toLocaleTimeString() : '—' %></td>
+            <td><%= duration %></td>
+            <td><%= att.status %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
 
       <a href="/student/logout" class="logout-btn">🚪 Logout</a>
 

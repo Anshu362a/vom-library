@@ -5,7 +5,10 @@
     <form class="month-form" method="GET" action="/admin/monthly-attendance">
       <label for="month">Select Month:</label>
       <input type="month" id="month" name="month" value="<%= `${year}-${String(month).padStart(2, '0')}` %>" required>
-      <button type="submit">View</button>
+
+      <input type="text" name="search" placeholder="Search by name or ID" value="<%= search || '' %>">
+
+      <button type="submit">🔍 Search</button>
     </form>
 
     <% if (students.length === 0) { %>
@@ -17,37 +20,49 @@
             <th>Sr.</th>
             <th>Name</th>
             <th>ID</th>
+            <th>Present Days</th>
+            <th>Absent Days</th>
             <th>Date</th>
             <th>Entry</th>
             <th>Exit</th>
-            <th>Status</th>
             <th>Hours</th>
           </tr>
         </thead>
         <tbody>
-          <% students.forEach((student, idx) => {
-              student.attendance.forEach((record) => {
-                const attDate = new Date(record.entryTime || record.date);
-                if (attDate.getMonth() === month - 1 && attDate.getFullYear() === year) {
-                  let duration = '—';
-                  if (record.entryTime && record.exitTime) {
-                    const diffMs = new Date(record.exitTime) - new Date(record.entryTime);
-                    const hrs = Math.floor(diffMs / (1000 * 60 * 60));
-                    const mins = Math.floor((diffMs / (1000 * 60)) % 60);
-                    duration = `${hrs}h ${mins}m`;
-                  }
+          <% let index = 1;
+             students.forEach(student => {
+               let presentCount = 0;
+               let absentCount = 0;
+
+               student.attendance.forEach(record => {
+                 const attDate = new Date(record.entryTime || record.date);
+                 if (attDate.getMonth() === month - 1 && attDate.getFullYear() === year) {
+                   if (record.status === 'Present') presentCount++;
+                   if (record.status === 'Absent') absentCount++;
+
+                   let duration = '—';
+                   if (record.entryTime && record.exitTime) {
+                     const diffMs = new Date(record.exitTime) - new Date(record.entryTime);
+                     const hrs = Math.floor(diffMs / (1000 * 60 * 60));
+                     const mins = Math.floor((diffMs / (1000 * 60)) % 60);
+                     duration = `${hrs}h ${mins}m`;
+                   }
           %>
             <tr>
-              <td><%= idx + 1 %></td>
+              <td><%= index++ %></td>
               <td><%= student.name %></td>
               <td><%= student.studentId %></td>
+              <td><%= presentCount %></td>
+              <td><%= absentCount %></td>
               <td><%= attDate.toLocaleDateString() %></td>
               <td><%= record.entryTime ? new Date(record.entryTime).toLocaleTimeString() : '—' %></td>
               <td><%= record.exitTime ? new Date(record.exitTime).toLocaleTimeString() : '—' %></td>
-              <td><%= record.status %></td>
               <td><%= duration %></td>
             </tr>
-          <% } }) }) %>
+          <%   }
+               });
+             });
+          %>
         </tbody>
       </table>
     <% } %>

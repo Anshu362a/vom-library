@@ -5,14 +5,14 @@
   min-height: 100vh;
 }
 
-/* .container2 {
+.container2 {
   max-width: 1200px;
   margin: auto;
   background-color: #3f0a54;
   padding: 30px;
   border-radius: 16px;
   box-shadow: 0 0 20px rgba(0,0,0,0.4);
-} */
+}
 
 h2 {
   text-align: center;
@@ -84,4 +84,20 @@ h2 {
 
 .monthly-table tbody tr:hover {
   background-color: #eee;
+}
+
+
+
+
+/* /////////////// */
+.summary-row {
+  background-color: #f6f6f6;
+  font-weight: bold;
+  color: #333;
+}
+
+.no-records {
+  margin-top: 20px;
+  font-weight: bold;
+  color: red;
 }
