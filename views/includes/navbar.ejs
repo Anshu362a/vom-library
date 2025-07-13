@@ -1,20 +1,23 @@
 
 <nav class="navbar">
   <div class="navbar-left">
-    <div class="logo-circle">VOM</div>
+    <div class="logo-circle"><a href="/">VOM</a></div>
   </div>
-
   <div class="hamburger" onclick="toggleMenu()">
-    <i class="fas fa-bars"></i>
-  </div>
+  <i class="fas fa-bars"></i>
+</div>
 
-  <div class="navbar-right" id="nav-links">
-    <a href="/">Home</a>
-    <a href="/admin/register">Admin</a>
-    <a href="/student/register">Student</a>
-    <a href="/student/dashboard">dashboard</a>
-    <!-- <a href="/enquiry">Enquiry</a>
-    <a href="/about">About Us</a>
-    <a href="/contact">Contact Us</a> -->
-  </div>
+<div class="navbar-right" id="nav-links">
+  <a href="/">Home</a>
+  <a href="/admin/register">Admin</a>
+  <a href="/student/register">Student</a>
+  <a href="/student/dashboard">Dashboard</a>
+</div>
+
 </nav>
+<script>
+  function toggleMenu() {
+    const navLinks = document.getElementById("nav-links");
+    navLinks.classList.toggle("show");
+  }
+</script>

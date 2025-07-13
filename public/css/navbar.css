@@ -1,3 +1,4 @@
+/* ========== Desktop Navbar ========== */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -12,15 +13,9 @@
 }
 
 .navbar-left {
-  padding-left: 20px; /* Adds space to the left of the logo */
+  padding-left: 20px;
 }
 
-.navbar-right {
-  padding-right: 20px; /* Adds space after the last link */
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
 .logo-circle {
   width: 50px;
   height: 50px;
@@ -35,7 +30,13 @@
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
+.logo-circle a {
+  color: #2E003E;
+  text-decoration: none;
+}
+
 .navbar-right {
+  padding-right: 20px;
   display: flex;
   gap: 20px;
   align-items: center;
@@ -45,22 +46,23 @@
   color: #FFFFFF;
   text-decoration: none;
   font-weight: 600;
-  transition: 0.3s;
+  transition: color 0.3s;
 }
 
 .navbar-right a:hover {
   color: #FA812F;
 }
 
-/* Hamburger Icon */
+/* ========== Hamburger Icon (Hidden on Desktop) ========== */
 .hamburger {
   display: none;
   font-size: 24px;
   color: white;
   cursor: pointer;
+  margin-right: 10px;
 }
 
-/* Mobile Styles */
+/* ========== Mobile Styles ========== */
 @media (max-width: 768px) {
   .hamburger {
     display: block;
@@ -71,6 +73,7 @@
     flex-direction: column;
     display: none;
     margin-top: 10px;
+    padding-right: 20px;
   }
 
   .navbar-right a {
@@ -78,6 +81,13 @@
     width: 100%;
     text-align: left;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s, padding-left 0.3s, color 0.3s;
+  }
+
+  .navbar-right a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding-left: 15px;
+    color: #FA812F;
   }
 
   .navbar-right.show {
