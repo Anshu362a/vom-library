@@ -75,8 +75,6 @@ app.use(methodOverride('_method'));
 
 
 
-
-
 app.use((req, res, next) => {
   res.locals.moment = moment;
   next();
@@ -87,159 +85,85 @@ const istTime = moment().tz("Asia/Kolkata").format("YYYY-MM-DD hh:mm A");
 console.log("India Time:", istTime); // e.g., "2025-07-12 08:31 AM"
 
 
-// --------------ip and others------//
-
-// app.set('trust proxy', true); // Required when behind a proxy like Render
-
-// app.use(async (req, res, next) => {
-//   const ip =
-//     req.headers['x-forwarded-for']?.split(',')[0].trim() ||
-//     req.ip ||
-//     req.socket.remoteAddress;
-
-//   const geo = geoip.lookup(ip);
-//   const location = geo
-//     ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
-//     : 'Unknown Location';
-
-//   const time = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
-
-//   // ❌ Don't log the same IP multiple times in a day
-//   const today = moment().startOf('day');
-//   const existingVisit = await Visit.findOne({
-//     ip,
-//     visitedAt: { $gte: today.toDate() }
-//   });
-
-//   if (!existingVisit) {
-//     await Visit.create({ ip, location, visitedAt: new Date(time) });
-//     console.log("✅ New unique visit recorded");
-//   } else {
-//     console.log("ℹ️ IP already visited today");
-//   }
-
-//   next();
-// });
+// // --------------ip and others------//
 
 
-// app.set('trust proxy', true); // This is required to let Express trust x-forwarded-for
-
-
-
-
-app.set('trust proxy', true); // Trust x-forwarded-for (for Render/Heroku)
+app.set('trust proxy', true); // For x-forwarded-for behind proxies like Render
 
 app.use(useragent.express()); // Parse device info
 
 app.use(async (req, res, next) => {
-  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || req.socket.remoteAddress;
-  const geo = geoip.lookup(ip);
-  const location = geo
-    ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
-    : 'Unknown Location';
+  try {
+    const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || req.socket.remoteAddress;
+    const geo = geoip.lookup(ip);
 
-  const platform = req.useragent.platform || 'Unknown Platform';
-  const browser = req.useragent.browser || 'Unknown Browser';
-  const deviceType = req.useragent.isMobile ? 'Mobile' : 'Desktop';
-  const device = `${platform} - ${browser} (${deviceType})`;
+    const location = geo
+      ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
+      : 'Unknown Location';
 
-  const today = moment().tz("Asia/Kolkata").startOf('day');
-  const now = moment().tz("Asia/Kolkata").toDate();
+    const platform = req.useragent.platform || 'Unknown Platform';
+    const browser = req.useragent.browser || 'Unknown Browser';
+    const deviceType = req.useragent.isMobile ? 'Mobile' : 'Desktop';
+    const device = `${platform} - ${browser} (${deviceType})`;
 
-  const alreadyLogged = await Visit.findOne({
-    ip,
-    device,
-    visitedAt: { $gte: today.toDate() }
-  });
+    const today = moment().tz("Asia/Kolkata").startOf('day');
+    const now = moment().tz("Asia/Kolkata").toDate();
 
-  // if (!alreadyLogged) {
-  //   await Visit.create({ ip, location, device, visitedAt: now });
-  //   console.log("✅ New Visit Logged:", { ip, device, location });
-  // } else {
-  //   // console.log("ℹ️ Already logged today for", ip, device);
-  // }
+    const alreadyLogged = await Visit.findOne({
+      ip,
+      device,
+      visitedAt: { $gte: today.toDate() }
+    });
 
-  next();
+    if (!alreadyLogged) {
+      await Visit.create({
+        ip,
+        device,
+        location,
+        visitedAt: now
+      });
+      console.log("✅ New visit logged:", { ip, device, location });
+    } else {
+      console.log("ℹ️ Already logged today:", ip);
+    }
+
+    next();
+  } catch (err) {
+    console.error("❌ IP log error:", err);
+    next(); // don't block user on error
+  }
 });
 
 
 
-// app.set('trust proxy', true); // Required for Render/Heroku
-// app.use(useragent.express()); // Must be before visit logging
+
+// app.set('trust proxy', true); // Trust x-forwarded-for (for Render/Heroku)
+
+// app.use(useragent.express()); // Parse device info
 
 // app.use(async (req, res, next) => {
-//   const ip =
-//     req.headers['x-forwarded-for']?.split(',')[0].trim() ||
-//     req.ip ||
-//     req.socket.remoteAddress;
-
+//   const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || req.socket.remoteAddress;
 //   const geo = geoip.lookup(ip);
-
 //   const location = geo
 //     ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
 //     : 'Unknown Location';
 
-//   const time = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
-
-//   // ✅ Construct device info
 //   const platform = req.useragent.platform || 'Unknown Platform';
 //   const browser = req.useragent.browser || 'Unknown Browser';
 //   const deviceType = req.useragent.isMobile ? 'Mobile' : 'Desktop';
-
 //   const device = `${platform} - ${browser} (${deviceType})`;
 
-//   // ✅ Avoid duplicate logs for same IP per day
-//   const today = moment().startOf('day');
-//   const existing = await Visit.findOne({
+//   const today = moment().tz("Asia/Kolkata").startOf('day');
+//   const now = moment().tz("Asia/Kolkata").toDate();
+
+//   const alreadyLogged = await Visit.findOne({
 //     ip,
+//     device,
 //     visitedAt: { $gte: today.toDate() }
 //   });
 
-//   if (!existing) {
-//     await Visit.create({ ip, location, device, visitedAt: new Date(time) });
-//     console.log("✅ Logged:", { ip, location, device });
-//   } else {
-//     console.log("ℹ️ Already logged today");
-//   }
-
 //   next();
 // });
-
-
-
-// app.set('trust proxy', true); // Required on Render/Heroku
-// app.use(useragent.express()); // ✅  // Middleware to get device info
-// app.use(async (req, res, next) => {
-//   // Prefer real IP from proxy headers
-//   const ip =
-//     req.headers['x-forwarded-for']?.split(',')[0].trim() ||
-//     req.ip ||
-//     req.socket.remoteAddress;
-
-//   const geo = geoip.lookup(ip);
-
-//   const location = geo
-//     ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
-//     : 'Unknown Location';
-
-//   const time = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
-//   const device = `${req.useragent.platform} - ${req.useragent.browser} (${req.useragent.isMobile ? 'Mobile' : 'Desktop'})`;
-
-//   console.log(`📍 Visitor IP: ${ip}`);
-//   console.log(`📍 Geo Location: ${location}`);
-//   console.log(`📱 Device Info: ${device}`);
-//   console.log("📱 UserAgent Info:", req.useragent);
-
-
-//   await Visit.create({ 
-//     ip, 
-//     location,
-//     device, 
-//     visitedAt: new Date(time) });
-
-//   next();
-// });
-
 
 // --------------ip and others------//
 
@@ -249,22 +173,18 @@ const sessionConfig = {
   secret: 'vomSecretKey',
   resave: false,
   saveUninitialized: true,
+  store: MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 3600 // reduces session write frequency
+  }),
   cookie: {
     httpOnly: true,
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // 1 week
     maxAge: 1000 * 60 * 60 * 24 * 7
   }
 };
+
 app.use(session(sessionConfig));
 app.use(flash());
-
-// Flash Messages + Locals
-// app.use((req, res, next) => {
-//   res.locals.success = req.flash('success');
-//   res.locals.error = req.flash('error');
-//   res.locals.currentUser = req.user;
-//   next();
-// });
 
 app.use((req, res, next) => {
   res.locals.success = req.flash('success') || [];
@@ -327,19 +247,27 @@ app.get('/', async (req, res) => {
   res.render('listings/home', { visitCount: count });
 });
 
-// Middleware to count visits
+
+// // Middleware to count visits
+
 app.use(async (req, res, next) => {
-  let visit = await Visit.findOne();
-  if (!visit) {
-    visit = new Visit({ count: 1 });
-  } else {
-    visit.count += 1;
+  // Only count visit when landing on root (homepage)
+  if (req.path === '/' && !req.session.hasVisited) {
+    let visit = await Visit.findOne();
+
+    if (!visit) {
+      visit = new Visit({ count: 1 });
+    } else {
+      visit.count += 1;
+    }
+
+    await visit.save();
+    req.session.hasVisited = true; // Mark session as counted
+    console.log("✅ Unique visit counted");
   }
-  await visit.save();
+
   next();
 });
-
-
 
 
 // Catch 404 - Not Found

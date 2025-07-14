@@ -35,7 +35,6 @@ const validate = (schema) => (req, res, next) => {
   next();
 };
 
-
 router.get("/register", async (req, res) => {
   const adminCount = await Admin.countDocuments();
   if (adminCount > 0) return res.redirect("/admin/login");
@@ -92,7 +91,6 @@ router.post("/register", async (req, res) => {
 router.get("/login", (req, res) => {
   res.render("listings/admin/login");
 });
-
 
 router.post(
   "/login",
@@ -266,7 +264,6 @@ router.post("/mark-attendance", isAdminLoggedIn, async (req, res) => {
 
 // Today attendance
 
-
 router.get("/today-attendance", isAdminLoggedIn, async (req, res) => {
   try {
     const allStudents = await Student.find({});
@@ -281,15 +278,18 @@ router.get("/today-attendance", isAdminLoggedIn, async (req, res) => {
       );
 
       if (todayRecord) {
-        const entryTimeFormatted = moment(todayRecord.entryTime).tz('Asia/Kolkata').format('hh:mm:ss A');
+        const entryTimeFormatted = moment(todayRecord.entryTime)
+          .tz("Asia/Kolkata")
+          .format("hh:mm:ss A");
         const exitTimeFormatted = todayRecord.exitTime
-          ? moment(todayRecord.exitTime).tz('Asia/Kolkata').format('hh:mm:ss A')
-          : '—';
+          ? moment(todayRecord.exitTime).tz("Asia/Kolkata").format("hh:mm:ss A")
+          : "—";
 
         // Duration in hrs/mins
-        let duration = '—';
+        let duration = "—";
         if (todayRecord.entryTime && todayRecord.exitTime) {
-          const diff = new Date(todayRecord.exitTime) - new Date(todayRecord.entryTime);
+          const diff =
+            new Date(todayRecord.exitTime) - new Date(todayRecord.entryTime);
           const hrs = Math.floor(diff / 1000 / 60 / 60);
           const mins = Math.floor((diff / 1000 / 60) % 60);
           duration = `${hrs}h ${mins}m`;
@@ -620,8 +620,6 @@ router.get(
 
 //---------monthlyAttendance start-----------//
 
-
-
 router.get("/monthly-attendance", isAdminLoggedIn, async (req, res) => {
   const { month, search } = req.query;
   const selectedDate = month ? new Date(month) : new Date();
@@ -630,28 +628,29 @@ router.get("/monthly-attendance", isAdminLoggedIn, async (req, res) => {
   const monthNum = selectedDate.getMonth(); // 0-indexed
 
   const today = new Date();
-  const todayDate = today.getMonth() === monthNum && today.getFullYear() === year
-    ? today.getDate()
-    : new Date(year, monthNum + 1, 0).getDate(); // limit to current day or month's last date
+  const todayDate =
+    today.getMonth() === monthNum && today.getFullYear() === year
+      ? today.getDate()
+      : new Date(year, monthNum + 1, 0).getDate(); // limit to current day or month's last date
 
   let query = {};
   if (search) {
     query = {
       $or: [
         { name: { $regex: search, $options: "i" } },
-        { studentId: { $regex: search, $options: "i" } }
-      ]
+        { studentId: { $regex: search, $options: "i" } },
+      ],
     };
   }
 
   const students = await Student.find(query).lean();
 
-  students.forEach(student => {
+  students.forEach((student) => {
     const monthlyRecords = [];
     let totalDaysPresent = 0;
 
     // 1. Find first attendance date in the selected month
-    const firstAttendanceInMonth = student.attendance?.find(a => {
+    const firstAttendanceInMonth = student.attendance?.find((a) => {
       const d = new Date(a.entryTime);
       return d.getFullYear() === year && d.getMonth() === monthNum;
     });
@@ -663,15 +662,21 @@ router.get("/monthly-attendance", isAdminLoggedIn, async (req, res) => {
         const currentDate = new Date(year, monthNum, day);
         const dayStr = currentDate.toDateString();
 
-        const record = student.attendance?.find(a =>
-          new Date(a.entryTime).toDateString() === dayStr
+        const record = student.attendance?.find(
+          (a) => new Date(a.entryTime).toDateString() === dayStr
         );
 
         if (record) {
           totalDaysPresent++;
-          const entry = new Date(record.entryTime).toLocaleTimeString();
-          const exit = record.exitTime ? new Date(record.exitTime).toLocaleTimeString() : '—';
-          let duration = '—';
+          const entry = new Date(record.entryTime).toLocaleTimeString("en-IN", {
+            timeZone: "Asia/Kolkata",
+          });
+          const exit = record.exitTime
+            ? new Date(record.exitTime).toLocaleTimeString("en-IN", {
+                timeZone: "Asia/Kolkata",
+              })
+            : "—";
+          let duration = "—";
 
           if (record.entryTime && record.exitTime) {
             const diff = new Date(record.exitTime) - new Date(record.entryTime);
@@ -685,16 +690,16 @@ router.get("/monthly-attendance", isAdminLoggedIn, async (req, res) => {
             entry,
             exit,
             status: record.status,
-            duration
+            duration,
           });
         } else {
           // Mark absent day after joining and before today
           monthlyRecords.push({
             date: dayStr,
-            entry: '—',
-            exit: '—',
-            status: 'Absent',
-            duration: '—'
+            entry: "—",
+            exit: "—",
+            status: "Absent",
+            duration: "—",
           });
         }
       }
@@ -714,7 +719,7 @@ router.get("/monthly-attendance", isAdminLoggedIn, async (req, res) => {
     month: monthNum + 1,
     year,
     monthName: selectedDate.toLocaleString("default", { month: "long" }),
-    search
+    search,
   });
 });
 
