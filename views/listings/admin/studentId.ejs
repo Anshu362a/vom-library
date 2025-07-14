@@ -8,7 +8,10 @@
 
   <!-- 🔵 FRONT SIDE -->
   <div class="id-card front">
-    <img src="/images/default-user.png" alt="Profile">
+    <img
+        src="<%= student.profileImage || '/images/default-user.png' %>"
+        alt="Student Image"
+      />
     <h2><%= student.name %></h2>
     <p><strong>Student ID:</strong> <%= student.studentId %></p>
     <p><strong>Email:</strong> <%= student.email %></p>

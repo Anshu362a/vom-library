@@ -2,92 +2,117 @@
   <div class="dashboard-container">
     <% if (student) { %>
 
-      <!-- Profile Section -->
-      <div class="student-profile">
-        <div class="profile-image">
-          <!-- <label for="profileUpload" class="upload-btn">📷</label>
+    <!-- Profile Section -->
+    <div class="student-profile">
+      <div class="profile-image">
+        <!-- <label for="profileUpload" class="upload-btn">📷</label>
           <img src="/images/default-user.png" alt="Profile Image" id="profilePreview" />
           <input type="file" id="profileUpload" style="display: none;" /> -->
-          <form action="/student/upload-profile" method="POST" enctype="multipart/form-data">
-            <label for="profileUpload" class="upload-btn">📷</label>
-            <img src="<%= student.profileImage || '/images/default-user.png' %>" alt="Profile Image" id="profilePreview" />
-            <input type="file" name="profile" id="profileUpload" style="display: none;" onchange="this.form.submit()" />
-          </form>
-
-        </div>
-
-        <div class="profile-info">
-          <h2>Hello, <%= student.name %> 👋</h2>
-          <p><strong>Student ID:</strong> <%= student.studentId %></p>
-          <p><strong>Email:</strong> <%= student.email %></p>
-          <p><strong>Mobile:</strong> <%= student.mobile %></p>
-          <button class="edit-btn" onclick="alert('Edit form coming soon!')" disabled>✏️ Edit Education</button>
-        </div>
+        <form
+          action="/student/upload-profile"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <label for="profileUpload" class="upload-btn">📷</label>
+          <img
+            src="<%= student.profileImage || '/images/default-user.png' %>"
+            alt="Profile Image"
+            id="profilePreview"
+          />
+          <input
+            type="file"
+            name="profile"
+            id="profileUpload"
+            style="display: none"
+            onchange="this.form.submit()"
+          />
+        </form>
       </div>
 
-      <!-- Stats Section -->
-      <div class="stats-container">
-        <div class="card">
-          <h3>📅 Membership Expiry</h3>
-          <p style="color: <%= new Date(student.membershipExpiry) < new Date() ? 'red' : 'lightgreen' %>;">
-            <%= new Date(student.membershipExpiry).toDateString() %>
-          </p>
-        </div>
+      <div class="profile-info">
+        <h2>Hello, <%= student.name %> 👋</h2>
+        <p><strong>Student ID:</strong> <%= student.studentId %></p>
+        <p><strong>Email:</strong> <%= student.email %></p>
+        <p><strong>Mobile:</strong> <%= student.mobile %></p>
+        <button
+          class="edit-btn"
+          onclick="alert('Edit form coming soon!')"
+          disabled
+        >
+          ✏️ Edit Education
+        </button>
+      </div>
+    </div>
 
-        <div class="card">
-          <h3>✅ Total Attendance</h3>
-          <p><%= student.attendance.length %> Days</p>
-        </div>
+    <!-- Stats Section -->
+    <div class="stats-container">
+      <div class="card">
+        <h3>📅 Membership Expiry</h3>
+        <p
+          style="color: <%= new Date(student.membershipExpiry) < new Date() ? 'red' : 'lightgreen' %>;"
+        >
+          <%= new Date(student.membershipExpiry).toDateString() %>
+        </p>
       </div>
 
-      <!-- Attendance History -->
-      <<div class="attendance-section">
-  <h3>📖 Attendance History</h3>
+      <div class="card">
+        <h3>✅ Total Attendance</h3>
+        <p><%= student.attendance.length %> Days</p>
+      </div>
+    </div>
 
-  <% if (student.attendance.length === 0) { %>
-    <p>No attendance records available.</p>
-  <% } else { %>
-    <table class="table table-bordered table-striped">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Entry</th>
-          <th>Exit</th>
-          <th>Total Time</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% student.attendance.forEach(att => {
-            const entry = att.entryTime ? new Date(att.entryTime) : null;
-            const exit = att.exitTime ? new Date(att.exitTime) : null;
+    <!-- Attendance History -->
+    <
+    <div class="attendance-section">
+      <h3>📖 Attendance History</h3>
 
-            let duration = '—';
-            if (entry && exit) {
-              const diffMs = exit - entry;
-              const hrs = Math.floor(diffMs / (1000 * 60 * 60));
-              const mins = Math.floor((diffMs / (1000 * 60)) % 60);
-              duration = `${hrs}h ${mins}m`;
-            }
-        %>
+      <% if (student.attendance.length === 0) { %>
+      <p>No attendance records available.</p>
+      <% } else { %>
+      <table class="table table-bordered table-striped">
+        <thead>
           <tr>
-            <td><%= new Date(att.date).toLocaleDateString() %></td>
-            <td><%= entry ? entry.toLocaleTimeString() : '—' %></td>
-            <td><%= exit ? exit.toLocaleTimeString() : '—' %></td>
+            <th>Date</th>
+            <th>Entry</th>
+            <th>Exit</th>
+            <th>Total Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% student.attendance.forEach(att => { const entry = att.entryTime ?
+          new Date(att.entryTime) : null; const exit = att.exitTime ? new
+          Date(att.exitTime) : null; let duration = '—'; if (entry && exit) {
+          const diffMs = exit - entry; const hrs = Math.floor(diffMs / (1000 *
+          60 * 60)); const mins = Math.floor((diffMs / (1000 * 60)) % 60);
+          duration = `${hrs}h ${mins}m`; } %>
+          <tr>
+            <td>
+              <%= new Date(att.date).toLocaleDateString('en-IN', { timeZone:
+              'Asia/Kolkata' }) %>
+            </td>
+            <td>
+              <%= entry ? new Date(entry).toLocaleTimeString('en-IN', {
+              timeZone: 'Asia/Kolkata' }) : '—' %>
+            </td>
+            <td>
+              <%= exit ? new Date(exit).toLocaleTimeString('en-IN', { timeZone:
+              'Asia/Kolkata' }) : '—' %>
+            </td>
+
             <td><%= duration %></td>
             <td><%= att.status %></td>
           </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  <% } %>
-</div>
+          <% }) %>
+        </tbody>
+      </table>
+      <% } %>
+    </div>
 
-
-      <a href="/student/logout" class="logout-btn">🚪 Logout</a>
+    <a href="/student/logout" class="logout-btn">🚪 Logout</a>
 
     <% } else { %>
-      <p style="color: red; text-align: center;">Student data not found.</p>
+    <p style="color: red; text-align: center">Student data not found.</p>
     <% } %>
   </div>
 </section>
