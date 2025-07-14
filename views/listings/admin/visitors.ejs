@@ -6,6 +6,7 @@
       <th>Device</th>
       <th>IP</th>
       <th>Location</th>
+      <th>Coordinates</th>
       <th>Visited At</th>
     </tr>
   </thead>
@@ -17,12 +18,27 @@
           <td><%= v.device || "Unknown" %></td>
           <td><%= v.ip || "N/A" %></td>
           <td><%= v.location || "Unknown" %></td>
+          <td>
+            <% if (v.coordinates && v.coordinates.length === 2) { %>
+              <%= v.coordinates[1] %>, <%= v.coordinates[0] %>
+              <br />
+              <a 
+                href="https://www.google.com/maps?q=<%= v.coordinates[1] %>,<%= v.coordinates[0] %>" 
+                target="_blank" 
+                style="color: #FA812F; text-decoration: underline;"
+              >
+                View on Map
+              </a>
+            <% } else { %>
+              Not available
+            <% } %>
+          </td>
           <td><%= moment(v.visitedAt).tz("Asia/Kolkata").format("DD MMM YYYY, hh:mm A") %></td>
         </tr>
       <% }) %>
     <% } else { %>
       <tr>
-        <td colspan="5">No visitor data found.</td>
+        <td colspan="6">No visitor data found.</td>
       </tr>
     <% } %>
   </tbody>

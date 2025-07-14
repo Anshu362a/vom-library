@@ -85,8 +85,10 @@ const istTime = moment().tz("Asia/Kolkata").format("YYYY-MM-DD hh:mm A");
 console.log("India Time:", istTime); // e.g., "2025-07-12 08:31 AM"
 
 
-// // --------------ip and others------//
+// // // --------------ip and others------//
 
+
+// --------------ip and others------//
 
 app.set('trust proxy', true); // For x-forwarded-for behind proxies like Render
 
@@ -100,6 +102,8 @@ app.use(async (req, res, next) => {
     const location = geo
       ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
       : 'Unknown Location';
+
+    const coordinates = geo?.ll ? [geo.ll[1], geo.ll[0]] : undefined; // [longitude, latitude]
 
     const platform = req.useragent.platform || 'Unknown Platform';
     const browser = req.useragent.browser || 'Unknown Browser';
@@ -120,9 +124,10 @@ app.use(async (req, res, next) => {
         ip,
         device,
         location,
-        visitedAt: now
+        visitedAt: now,
+        coordinates
       });
-      console.log("✅ New visit logged:", { ip, device, location });
+      console.log("✅ New visit logged:", { ip, device, location, coordinates });
     } else {
       console.log("ℹ️ Already logged today:", ip);
     }
@@ -134,36 +139,6 @@ app.use(async (req, res, next) => {
   }
 });
 
-
-
-
-// app.set('trust proxy', true); // Trust x-forwarded-for (for Render/Heroku)
-
-// app.use(useragent.express()); // Parse device info
-
-// app.use(async (req, res, next) => {
-//   const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || req.socket.remoteAddress;
-//   const geo = geoip.lookup(ip);
-//   const location = geo
-//     ? `${geo.city || 'Unknown City'}, ${geo.region || 'Unknown Region'}, ${geo.country || 'Unknown Country'}`
-//     : 'Unknown Location';
-
-//   const platform = req.useragent.platform || 'Unknown Platform';
-//   const browser = req.useragent.browser || 'Unknown Browser';
-//   const deviceType = req.useragent.isMobile ? 'Mobile' : 'Desktop';
-//   const device = `${platform} - ${browser} (${deviceType})`;
-
-//   const today = moment().tz("Asia/Kolkata").startOf('day');
-//   const now = moment().tz("Asia/Kolkata").toDate();
-
-//   const alreadyLogged = await Visit.findOne({
-//     ip,
-//     device,
-//     visitedAt: { $gte: today.toDate() }
-//   });
-
-//   next();
-// });
 
 // --------------ip and others------//
 
